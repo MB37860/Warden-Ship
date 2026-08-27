@@ -1,9 +1,9 @@
 name: Build desktop app
 
 # Builds the Electron desktop app (frontend + bundled portable Python backend
-# with the full F6 model stack) on Linux, macOS, and Windows. Native ML wheels
-# (torch, tensorflow, mediapipe, opencv) can't be cross-compiled, so each OS is
-# built on its own runner.
+# with the full F6 model stack) on Linux and Windows. Native ML wheels (torch,
+# tensorflow, mediapipe, opencv) can't be cross-compiled, so each OS is built on
+# its own runner.
 #
 # Triggered manually, or by pushing a version tag (v1.2.3). Tag builds publish
 # the installers as GitHub Release assets (release storage does not count
@@ -28,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -68,12 +68,12 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # The three matrix jobs race to create the release; only one wins,
-          # the rest fall through to the upload.
+          # Both matrix jobs race to create the release; only one wins, the
+          # other falls through to the upload.
           gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" \
             --title "$GITHUB_REF_NAME" --notes "Automated desktop build" || true
           shopt -s nullglob
-          files=(release/*.AppImage release/*.dmg release/*.exe release/*.zip)
+          files=(release/*.AppImage release/*.exe release/*.zip)
           gh release upload "$GITHUB_REF_NAME" "${files[@]}" \
             --repo "$GITHUB_REPOSITORY" --clobber
 
@@ -85,7 +85,6 @@ jobs:
           # upload-artifact ignores defaults.working-directory: use repo-root paths.
           path: |
             frontend/release/*.AppImage
-            frontend/release/*.dmg
             frontend/release/*.exe
             frontend/release/*.zip
           if-no-files-found: warn

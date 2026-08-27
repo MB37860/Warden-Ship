@@ -160,81 +160,24 @@ Every model was evaluated on the same **12,680-image held-out test set**
 
 ---
 
-## Architecture
+## How it fits together
 
-```mermaid
-flowchart LR
-    subgraph FE["🖥️ frontend/ — React 19 + React Three Fiber"]
-        direction TB
-        SC["Scenes<br/>deck · chest room · hallway<br/>island · quarters"]
-        FT["Features<br/>F1 … F6"]
-        API["src/api/*.js<br/>the only place fetch lives"]
-        SC --> FT --> API
-    end
+<div align="center">
+<img src="docs/images/architecture-app.png" alt="Which model stands behind which feature, from the scene down to storage" width="100%">
+</div>
 
-    subgraph BE["⚙️ backend/ — Flask"]
-        direction TB
-        BP["Blueprints<br/>/api/image · /api/f2<br/>/api/f5 · /api/f6 · /api/pipeline"]
-        RUN["Pipeline runner<br/>background subprocesses"]
-        CLIP["CLIP service<br/>text + image embeddings"]
-        BP --> RUN
-        BP --> CLIP
-    end
+Each column follows one feature from its scene, through the backend route that
+serves it, down to the models that produce the answer, and the storage it is
+written to. A star marks a model trained or adapted for this work; grey boxes
+are pretrained and frozen.
 
-    subgraph ML["🧠 Models & pipelines"]
-        direction TB
-        M1["F1 · CLIP ViT-B/32<br/>semantic vectors"]
-        M2["F2 · multi-task ViT<br/>TorchScript export"]
-        M5["F5 · PCA + clustering<br/>+ year head"]
-        M6["F6 · MediaPipe · RetinaFace<br/>OpenCV k-means · Hough"]
-    end
+<div align="center">
+<img src="docs/images/architecture-models.png" alt="The internal structure of the four models trained for this work" width="100%">
+</div>
 
-    DB[("MongoDB + GridFS<br/>images · metadata · vectors")]
-
-    API -- "HTTP/JSON" --> BP
-    RUN --> M1 & M2 & M5 & M6
-    CLIP --> M1
-    BP <--> DB
-    M1 & M2 & M5 & M6 <--> DB
-    M5 -- "coords.json" --> FT
-    M6 -- "index.json" --> FT
-```
-
-Two rules hold the design together:
-
-1. **Nothing infers at view time.** F1, F2, F5 and F6 run as background
-   pipelines through `/api/pipeline/run`; the UI stays interactive throughout
-   and reads only precomputed JSON.
-2. **Output is scoped per collection.** F5 and F6 artifacts live under
-   `output/<database>/`, so one upload can never read another's stale index.
-
-<details>
-<summary><b>REST API</b> — every endpoint the frontend talks to</summary>
-
-<br>
-
-| Method | Endpoint | Purpose |
-|---|---|---|
-| `GET` | `/api/health` | identify the process (the desktop shell uses it to avoid double-spawning) |
-| `POST` | `/api/image/upload-batch` | upload an archive into a named collection |
-| `GET` | `/api/image/images` | list stored artworks |
-| `GET` | `/api/image/image/<file_id>` | stream one image out of GridFS |
-| `GET` | `/api/image/semantic-search` | **F1** — CLIP text-to-image search |
-| `POST` | `/api/f2/classify` | **F2** — style / genre / artist for one image |
-| `GET` | `/api/f2/labels` | the label taxonomy the classifier was trained on |
-| `GET` | `/api/f5/coords` | **F5** — history-map coordinates for a collection |
-| `GET` | `/api/f5/index`, `/api/f5/summary` | the map's manifest and cluster summary |
-| `GET` | `/api/f6/index` | **F6** — merged attribute index (pose, colour, hough, portrait) |
-| `GET` | `/api/f6/coords`, `/api/f6/summary` | attribute coordinates and channel coverage |
-| `POST` | `/api/pipeline/run` | start F1 / F2 / F5 / F6 in the background |
-| `GET` | `/api/pipeline/status` | poll pipeline progress |
-| `POST` | `/api/pipeline/cancel` | cancel a running pipeline |
-| `GET` | `/api/database/list`, `/create`, `/delete/<name>` | manage collections |
-
-Every feature endpoint takes `?db_name=<collection>`; output is scoped per
-collection on disk.
-
-</details>
+The four models that were trained or adapted here, drawn in the shape they were
+trained in. Both figures come from the thesis; their TikZ source is in
+[`docs/diagrams/`](docs/diagrams/).
 
 ---
 
@@ -301,13 +244,65 @@ images into the chest, pick which pipelines to run, and start walking.
 **Checks:**
 
 ```bash
-cd frontend && npm run test:run && npm run lint   # 50 tests, eslint clean
+cd frontend && npm run test:run && npm run lint   # 53 tests, eslint clean
 cd frontend && npm run build                      # production bundle
 ```
 
 ---
 
-## Repository layout
+## Desktop app
+
+Prebuilt installers for **Windows and Linux** are on the
+[releases page](https://github.com/MB37860/Warden-Ship/releases). Each one
+bundles a portable Python runtime and its own MongoDB — no system Python, no
+system database, nothing to install alongside it.
+
+To build one yourself:
+
+```bash
+cd frontend
+npm run electron:dev      # dev: Vite + Electron together
+npm run electron:build    # package into frontend/release/
+```
+
+CI builds both platforms on every version tag — see
+[`.github/workflows/build-desktop.yml`](.github/workflows/build-desktop.yml).
+Native ML wheels can't be cross-compiled, so each OS builds on its own runner.
+
+---
+
+<details>
+<summary><b>REST API</b> — every endpoint the frontend talks to</summary>
+
+<br>
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| `GET` | `/api/health` | identify the process (the desktop shell uses it to avoid double-spawning) |
+| `POST` | `/api/image/upload-batch` | upload an archive into a named collection |
+| `GET` | `/api/image/images` | list stored artworks |
+| `GET` | `/api/image/image/<file_id>` | stream one image out of GridFS |
+| `GET` | `/api/image/semantic-search` | **F1** — CLIP text-to-image search |
+| `POST` | `/api/f2/classify` | **F2** — style / genre / artist for one image |
+| `GET` | `/api/f2/labels` | the label taxonomy the classifier was trained on |
+| `GET` | `/api/f5/coords` | **F5** — history-map coordinates for a collection |
+| `GET` | `/api/f5/index`, `/api/f5/summary` | the map's manifest and cluster summary |
+| `GET` | `/api/f6/index` | **F6** — merged attribute index (pose, colour, hough, portrait) |
+| `GET` | `/api/f6/coords`, `/api/f6/summary` | attribute coordinates and channel coverage |
+| `POST` | `/api/pipeline/run` | start F1 / F2 / F5 / F6 in the background |
+| `GET` | `/api/pipeline/status` | poll pipeline progress |
+| `POST` | `/api/pipeline/cancel` | cancel a running pipeline |
+| `GET` | `/api/database/list`, `/create`, `/delete/<name>` | manage collections |
+
+Every feature endpoint takes `?db_name=<collection>`; output is scoped per
+collection on disk.
+
+</details>
+
+<details>
+<summary><b>Repository layout</b></summary>
+
+<br>
 
 ```
 Warden-Ship/
@@ -328,26 +323,12 @@ Warden-Ship/
 └── docs/                        thesis PDF, architecture, features, evaluation
 ```
 
----
+</details>
 
-## Desktop build
+<details>
+<summary><b>Training the models</b></summary>
 
-The app also ships as a self-contained Electron desktop build with a portable
-Python runtime and a bundled MongoDB — no system Python, no system database.
-
-```bash
-cd frontend
-npm run electron:dev      # dev: Vite + Electron together
-npm run electron:build    # package an AppImage / dmg / zip into frontend/release/
-```
-
-CI does the same on Linux, macOS and Windows —
-see [`.github/workflows/build-desktop.yml`](.github/workflows/build-desktop.yml).
-Native ML wheels can't be cross-compiled, so each OS builds on its own runner.
-
----
-
-## Training the models
+<br>
 
 Training is offline and cluster-bound; the app only ever reads exported
 artifacts. Each job lives in its own directory under `backend/training/` with
@@ -361,6 +342,8 @@ its own README and SLURM script:
 | `training/f5_year_head/` | the year regressor over CLIP vectors |
 
 Full runbook: [`docs/training-runbook.md`](docs/training-runbook.md).
+
+</details>
 
 ---
 

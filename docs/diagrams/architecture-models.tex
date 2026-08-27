@@ -1,0 +1,197 @@
+% ---------------------------------------------------------------------------
+%  Diagram: arhitekture modelov, ki jih poganja aplikacija Warden Ship.
+%  (a) klasifikator F2 za tri naloge, (b) kontrastna doučitev CLIP,
+%  (c) metrična vložitev ArcFace, (d) glava za oceno letnice.
+%  Vključi z \input{fig/arch-models.tex} znotraj okolja largefigure.
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm, y=1cm, font=\sffamily,
+  execute at begin node={\hyphenpenalty=10000\exhyphenpenalty=10000\relax}]
+
+% ---- barve ---------------------------------------------------------------
+\definecolor{wsInk}{HTML}{16283C}
+\definecolor{wsPanel}{HTML}{F7F4EC}
+\definecolor{wsPanelLine}{HTML}{E0D7C2}
+\definecolor{wsGrey}{HTML}{8A9099}
+\definecolor{wsGreyFill}{HTML}{ECEDEF}
+\definecolor{fOne}{HTML}{2F6FA8}
+\definecolor{fTwo}{HTML}{BE8A10}
+\definecolor{fFive}{HTML}{7A5EA6}
+\definecolor{fSix}{HTML}{D2683C}
+\definecolor{fAcc}{HTML}{3E8E70}
+
+\tikzset{
+  panel/.style     = {rounded corners=4pt, fill=wsPanel, draw=wsPanelLine,
+                      line width=0.7pt},
+  ptitle/.style    = {anchor=west, font=\sffamily\small\bfseries, text=#1},
+  psub/.style      = {anchor=west, font=\sffamily\scriptsize, text=wsInk!55},
+  blk/.style       = {rounded corners=2.5pt, draw=#1, line width=0.9pt,
+                      fill=#1!10, text=wsInk, align=center,
+                      inner sep=3pt, font=\sffamily\scriptsize},
+  gblk/.style      = {rounded corners=2.5pt, draw=wsGrey, line width=0.7pt,
+                      fill=wsGreyFill, text=wsInk!85, align=center,
+                      inner sep=3pt, font=\sffamily\scriptsize},
+  head/.style      = {rounded corners=2.5pt, draw=#1, line width=0.9pt,
+                      fill=white, text=wsInk, align=center,
+                      inner sep=2.5pt, font=\sffamily\scriptsize},
+  ar/.style        = {-{Stealth[length=2.2mm, width=1.6mm]}, line width=0.9pt,
+                      draw=#1!85},
+  dar/.style       = {-{Stealth[length=2mm, width=1.4mm]}, line width=0.7pt,
+                      draw=#1!75, dash pattern=on 2.2pt off 1.6pt},
+  lab/.style       = {font=\sffamily\scriptsize, text=#1!85!black, inner sep=1.5pt},
+  tiny/.style      = {font=\sffamily\fontsize{6}{7}\selectfont, text=wsInk!60},
+}
+
+% ===========================================================================
+% (a) KLASIFIKATOR F2 ZA TRI NALOGE
+% ===========================================================================
+\begin{scope}[shift={(0,6.05)}]
+  \fill[panel] (0,0) rectangle (8.7,5.15);
+  \fill[fTwo] (0,4.35) rectangle (0.12,5.15);
+  \node[ptitle=fTwo] at (0.32,4.90) {(a)\; F2 multi-task classifier};
+  \node[psub] at (0.32,4.50) {one backbone, three output heads · fine-tuned on WikiArt};
+
+  \node[gblk, minimum width=1.15cm, minimum height=1.15cm] (aimg) at (1.0,2.55)
+       {image\\ $336^2$};
+
+  % osnovna mreža: sklad blokov
+  \foreach \i in {0,1,2} {
+    \draw[rounded corners=2pt, draw=fTwo!45, line width=0.6pt, fill=fTwo!7]
+      ({2.15+0.09*\i}, {1.55+0.09*\i}) rectangle ({4.05+0.09*\i}, {3.55+0.09*\i});
+  }
+  \node[align=center, font=\sffamily\scriptsize, text=wsInk] at (3.2,2.80)
+       {ViT-L/14\\[1pt] @ 336\\[3pt]\textcolor{fTwo!85!black}{CLIP weights}};
+  \node[tiny] at (3.2,2.02) {24 blocks};
+
+  \node[blk=fTwo, minimum width=0.95cm, minimum height=1.5cm] (afeat) at (5.05,2.55)
+       {\rotatebox{90}{vector 1024}};
+
+  \node[head=fTwo] (ah1) at (7.1,3.75) {\textbf{style} head · 27};
+  \node[head=fTwo] (ah2) at (7.1,2.85) {\textbf{genre} head · 10};
+  \node[head=fTwo] (ah3) at (7.1,1.95) {\textbf{artist} head · 25};
+
+  \draw[ar=fTwo] (aimg.east) -- (2.13,2.55);
+  \draw[ar=fTwo] (4.23,2.55) -- (afeat.west);
+  \foreach \h in {ah1,ah2,ah3} {\draw[ar=fTwo] (afeat.east) -- (\h.west);}
+
+  \node[lab=fTwo, align=left, text width=8.0cm, anchor=west] at (0.35,0.66)
+       {\textbf{masked joint loss} · updates only labelled heads};
+\end{scope}
+
+% ===========================================================================
+% (b) KONTRASTNA DOUČITEV MODELA CLIP
+% ===========================================================================
+\begin{scope}[shift={(9.3,6.05)}]
+  \fill[panel] (0,0) rectangle (8.7,5.15);
+  \fill[fOne] (0,4.35) rectangle (0.12,5.15);
+  \node[ptitle=fOne] at (0.32,4.90) {(b)\; Contrastive CLIP fine-tuning};
+  \node[psub] at (0.32,4.50) {image--caption pairs from metadata · InfoNCE loss};
+
+  \node[gblk, minimum width=1.0cm, minimum height=0.9cm] (bimg) at (0.95,3.35) {image};
+  \node[gblk, minimum width=1.0cm, minimum height=0.9cm, align=center] (btxt) at (0.95,1.45)
+       {caption};
+  \node[tiny, align=left, text width=2.7cm, anchor=west] at (0.45,0.72)
+       {\emph{\enquote{a Baroque religious painting by Rubens}}};
+
+  \node[blk=fOne, minimum width=1.9cm, minimum height=0.85cm] (benc1) at (3.15,3.35)
+       {image\\ encoder};
+  \node[blk=fOne, minimum width=1.9cm, minimum height=0.85cm] (benc2) at (3.15,1.45)
+       {text\\ encoder};
+
+  \draw[ar=fOne] (bimg.east) -- (benc1.west);
+  \draw[ar=fOne] (btxt.east) -- (benc2.west);
+
+  % matrika podobnosti
+  \def\mx{5.55}\def\my{1.55}\def\ms{0.42}
+  \foreach \r in {0,1,2,3} {
+    \foreach \c in {0,1,2,3} {
+      \ifnum\numexpr3-\r\relax=\c
+        \draw[fill=fOne!75, draw=fOne] ({\mx+\c*\ms}, {\my+\r*\ms})
+              rectangle ({\mx+\c*\ms+\ms-0.05}, {\my+\r*\ms+\ms-0.05});
+      \else
+        \draw[fill=fOne!12, draw=fOne!30] ({\mx+\c*\ms}, {\my+\r*\ms})
+              rectangle ({\mx+\c*\ms+\ms-0.05}, {\my+\r*\ms+\ms-0.05});
+      \fi
+    }
+  }
+  \node[tiny] at ({\mx+0.8},{\my-0.28}) {cosine similarity matrix};
+  \node[lab=fOne] at ({\mx+2*\ms-0.02},{\my+4*\ms+0.34})
+       {matching pair $\to$ diagonal};
+
+  \draw[ar=fOne] (benc1.east) to[out=0,in=180] ({\mx-0.12}, {\my+3.1*\ms});
+  \draw[ar=fOne] (benc2.east) to[out=0,in=180] ({\mx-0.12}, {\my+0.9*\ms});
+
+\end{scope}
+
+% ===========================================================================
+% (c) METRIČNA VLOŽITEV ARCFACE
+% ===========================================================================
+\begin{scope}[shift={(0,0.45)}]
+  \fill[panel] (0,0) rectangle (8.7,5.15);
+  \fill[fAcc] (0,4.35) rectangle (0.12,5.15);
+  \node[ptitle=fAcc] at (0.32,4.90) {(c)\; ArcFace metric embedding};
+  \node[psub] at (0.32,4.50) {angular margin $m=0.3$, scale $s=30$ · supervised by style};
+
+  \node[gblk, minimum width=1.0cm, minimum height=0.95cm] (cimg) at (0.95,3.0) {image};
+  \node[blk=fAcc, minimum width=1.5cm, minimum height=0.95cm] (cbb) at (2.55,3.0)
+       {ViT-B/16\\ \textcolor{fAcc}{CLIP}};
+  \node[blk=fAcc, minimum width=1.5cm, minimum height=0.95cm] (cproj) at (4.75,3.0)
+       {linear 512-d\\ $\|v\|=1$};
+  \draw[ar=fAcc] (cimg.east) -- (cbb.west);
+  \draw[ar=fAcc] (cbb.east) -- (cproj.west);
+
+  % hipersfera
+  \def\ox{7.20}\def\oy{3.0}\def\orad{1.15}
+  \draw[draw=wsInk!25, line width=0.7pt] (\ox,\oy) circle (\orad);
+  % vložitve so L2-normirane, zato točke ležijo na krožnici (r = \orad)
+  \foreach \a in {60, 68, 76, 84, 92} {
+    \fill[fOne!75] ({\ox+\orad*cos(\a)}, {\oy+\orad*sin(\a)}) circle (0.075);}
+  \foreach \a in {-6, 2, 10, 18, 26} {
+    \fill[fSix!80] ({\ox+\orad*cos(\a)}, {\oy+\orad*sin(\a)}) circle (0.075);}
+  \draw[draw=wsInk!45, line width=0.6pt] (\ox,\oy) -- ({\ox+\orad*cos(74)}, {\oy+\orad*sin(74)});
+  \draw[draw=wsInk!45, line width=0.6pt] (\ox,\oy) -- ({\ox+\orad*cos(16)}, {\oy+\orad*sin(16)});
+  \draw[draw=fAcc, line width=1.1pt] (\ox,\oy) ++(16:0.70) arc (16:74:0.70);
+  \node[tiny] at ({\ox},{\oy-\orad-0.26}) {unit hypersphere};
+
+  \node[lab=fAcc, align=left, text width=8.0cm, anchor=west] at (0.35,0.62)
+       {$\cos(\theta+m)=\cos\theta\cos m-\sin\theta\sin m$\\
+        loss $8.35 \to 0.23$ over 20 epochs};
+\end{scope}
+
+% ===========================================================================
+% (d) GLAVA ZA OCENO LETNICE
+% ===========================================================================
+\begin{scope}[shift={(9.3,0.45)}]
+  \fill[panel] (0,0) rectangle (8.7,5.15);
+  \fill[fFive] (0,4.35) rectangle (0.12,5.15);
+  \node[ptitle=fFive] at (0.32,4.90) {(d)\; Year-estimation head (F5)};
+  \node[psub] at (0.32,4.50) {ordinal regression over 73 decade bins, 1300--2029};
+
+  \node[gblk, minimum width=1.35cm, minimum height=0.95cm] (dvec) at (1.0,2.85)
+       {CLIP\\ embedding 512};
+  \node[blk=fFive, minimum width=1.45cm, minimum height=0.95cm] (dmlp) at (2.95,2.85)
+       {MLP 512\\ GELU, 0.15};
+  \draw[ar=fFive] (dvec.east) -- (dmlp.west);
+
+  % porazdelitev čez desetletne razrede
+  \def\hx{4.35}\def\hy{1.95}
+  \foreach \i/\h in {0/0.12, 1/0.18, 2/0.28, 3/0.5, 4/0.86, 5/1.25, 6/0.95, 7/0.55,
+                     8/0.3, 9/0.2, 10/0.14, 11/0.1} {
+    \ifnum\i=5 \fill[fFive!85] ({\hx+\i*0.26}, {\hy}) rectangle ({\hx+\i*0.26+0.2}, {\hy+\h});
+    \else \fill[fFive!35] ({\hx+\i*0.26}, {\hy}) rectangle ({\hx+\i*0.26+0.2}, {\hy+\h});\fi
+  }
+  \draw[draw=wsInk!35, line width=0.6pt] ({\hx-0.06},{\hy}) -- ({\hx+3.24},{\hy});
+  \node[tiny] at ({\hx+1.6},{\hy-0.28}) {probability per decade};
+  \draw[ar=fFive] (dmlp.east) to[out=-25,in=170] ({\hx-0.10},{\hy+0.18});
+
+  \node[blk=fFive, minimum width=2.5cm, minimum height=0.7cm] (dout) at (6.05,3.95)
+       {expected value \textcolor{fFive}{$\to$ 1876}\\
+        peak probability \textcolor{fFive}{$\to$ confidence}};
+  \draw[ar=fFive] ({\hx+1.55},{\hy+1.35}) -- (dout.south);
+
+  \node[lab=fFive, align=left, text width=8.0cm, anchor=west] at (0.35,0.62)
+       {soft targets $\sigma \approx 15$ years · artist-disjoint split\\
+        MAE 31.2 years (naive 73.5)};
+\end{scope}
+
+
+\end{tikzpicture}

@@ -1,7 +1,7 @@
 {
   "name": "warden-ship",
   "private": true,
-  "version": "0.1.8",
+  "version": "1.0.0",
   "description": "Warden Ship — an interactive 3D explorer for digitised art collections, with a local machine-learning backend.",
   "author": "Matej Breskvar",
   "type": "module",

@@ -1,0 +1,134 @@
+% ---------------------------------------------------------------------------
+%  Diagram: arhitektura aplikacije Warden Ship -- kateri modeli stojijo za
+%  katero funkcionalnostjo (F1-F6).  Vključi znotraj okolja largefigure:
+%      \input{fig/arch-app.tex}
+% ---------------------------------------------------------------------------
+\begin{tikzpicture}[x=1cm, y=1cm, font=\sffamily]
+
+% ---- barvna paleta -------------------------------------------------------
+\definecolor{wsInk}{HTML}{16283C}
+\definecolor{wsBand}{HTML}{F4F0E5}
+\definecolor{wsBandLine}{HTML}{DDD3B8}
+\definecolor{wsGrey}{HTML}{8A9099}
+\definecolor{wsGreyFill}{HTML}{ECEDEF}
+\definecolor{fOne}{HTML}{2F6FA8}
+\definecolor{fTwo}{HTML}{BE8A10}
+\definecolor{fThree}{HTML}{3E8E70}
+\definecolor{fFive}{HTML}{7A5EA6}
+\definecolor{fSix}{HTML}{D2683C}
+\definecolor{wsData}{HTML}{1E3A52}
+
+% ---- slogi ---------------------------------------------------------------
+\tikzset{
+  scenebox/.style  = {rounded corners=3pt, draw=#1, line width=0.9pt,
+                      fill=#1!10, text=wsInk, align=center,
+                      minimum width=3.15cm, minimum height=1.2cm,
+                      inner sep=2pt, font=\sffamily\footnotesize},
+  route/.style     = {rounded corners=2pt, draw=#1!60, line width=0.6pt,
+                      fill=white, text=#1!85!black, align=center,
+                      minimum width=3.15cm, minimum height=0.55cm,
+                      inner sep=1pt, font=\sffamily\scriptsize},
+  modelbox/.style  = {rounded corners=2.5pt, draw=#1, line width=0.9pt,
+                      fill=#1!8, text=wsInk, align=center,
+                      text width=2.95cm, minimum height=0.72cm,
+                      inner sep=1pt, font=\sffamily\scriptsize},
+  frozenbox/.style = {rounded corners=2.5pt, draw=wsGrey, line width=0.7pt,
+                      fill=wsGreyFill, text=wsInk!85, align=center,
+                      text width=2.95cm, minimum height=0.72cm,
+                      inner sep=1pt, font=\sffamily\scriptsize},
+  band/.style      = {rounded corners=4pt, fill=wsBand, draw=wsBandLine,
+                      line width=0.7pt},
+  gutter/.style    = {rotate=90, text=wsInk!55, font=\sffamily\scriptsize},
+  flow/.style      = {-{Stealth[length=2.4mm, width=1.8mm]}, line width=1pt,
+                      draw=#1!85},
+  biflow/.style    = {{Stealth[length=2.2mm, width=1.6mm]}-{Stealth[length=2.2mm, width=1.6mm]},
+                      line width=0.9pt, draw=#1!80},
+}
+
+% ---- geometrija ----------------------------------------------------------
+\def\cA{2.625}\def\cB{5.975}\def\cC{9.325}\def\cD{12.675}\def\cE{16.025}
+\def\bl{1.05}\def\br{17.60}          % levi in desni rob pasov
+\def\yScene{8.50}\def\yRoute{6.70}
+\def\rA{5.10}\def\rB{4.25}\def\rC{3.40}\def\rD{2.55}
+\def\yData{0.75}
+
+% ===== pas: čelni del =====================================================
+\fill[band] (\bl,7.80) rectangle (\br,9.20);
+\node[gutter, align=center] at (0.45,8.50) {\textsc{frontend}\\[-1pt]\textcolor{wsInk!40}{React · R3F}};
+
+\node[scenebox=fOne]  (s1) at (\cA,\yScene) {\textbf{F1}\; Star Atlas\\[1pt]\textcolor{wsInk!65}{semantic search}};
+\node[scenebox=fTwo]  (s2) at (\cB,\yScene) {\textbf{F2}\; Logbook\\[1pt]\textcolor{wsInk!65}{classification}};
+\node[scenebox=fThree](s3) at (\cC,\yScene) {\textbf{F3\,·\,F4}\; Charts\\[1pt]\textcolor{wsInk!65}{creativity, influence}};
+\node[scenebox=fFive] (s4) at (\cD,\yScene) {\textbf{F5}\; Chart Table\\[1pt]\textcolor{wsInk!65}{map of art history}};
+\node[scenebox=fSix]  (s5) at (\cE,\yScene) {\textbf{F6}\; Quarters\\[1pt]\textcolor{wsInk!65}{attribute filters}};
+
+% ===== pas: zaledje =======================================================
+\fill[band] (\bl,6.25) rectangle (\br,7.15);
+\node[gutter, align=center] at (0.45,6.70) {\textsc{backend}\\[-1pt]\textcolor{wsInk!40}{Flask · REST}};
+
+\node[route=fOne]  (r1) at (\cA,\yRoute) {\code{/semantic-search}};
+\node[route=fTwo]  (r2) at (\cB,\yRoute) {\code{/f2} · F2 pipeline};
+\node[route=fThree](r3) at (\cC,\yRoute) {\code{/f5/coords}};
+\node[route=fFive] (r4) at (\cD,\yRoute) {\code{/f5} · F5 pipeline};
+\node[route=fSix]  (r5) at (\cE,\yRoute) {\code{/f6} · F6 pipeline};
+
+% ===== pas: modeli ========================================================
+\fill[band] (\bl,2.10) rectangle (\br,5.60);
+\node[gutter, align=center] at (0.45,3.85) {\textsc{models}\\[-1pt]\textcolor{wsInk!40}{inference and pipelines}};
+
+\node[modelbox=fOne]  (m1a) at (\cA,\rA) {CLIP ViT-B/32\\ \textcolor{fOne}{$\bigstar$ contrastively fine-tuned}};
+
+\node[modelbox=fTwo]  (m2a) at (\cB,\rA) {ViT-L/14 @ 336\\ \textcolor{fTwo!85!black}{$\bigstar$ three heads, fine-tuned}};
+\node[frozenbox]      (m2b) at (\cB,\rB) {fallback: CLIP zero-shot};
+
+\node[modelbox=fThree](m3a) at (\cC,\rA) {no model of its own\\ \textcolor{fThree}{from the F5 coordinates}};
+
+\node[modelbox=fFive] (m4a) at (\cD,\rA) {metric embedding\\ \textcolor{fFive}{$\bigstar$ ArcFace, 512-d}};
+\node[modelbox=fFive] (m4b) at (\cD,\rB) {with visual descriptors\\ \textcolor{fFive}{$\to$ PCA, clusters,\\ neighbours}};
+\node[modelbox=fFive] (m4c) at (\cD,\rC) {year head\\ \textcolor{fFive}{$\bigstar$ trained from scratch}};
+
+\node[frozenbox]      (m5a) at (\cE,\rA) {MediaPipe · arm pose\\ RetinaFace · gaze};
+\node[frozenbox]      (m5b) at (\cE,\rB) {OpenCV · colours, lines};
+\node[frozenbox]      (m5c) at (\cE,\rC) {WikiArt · origin};
+
+% ===== podatkovni pas =====================================================
+\fill[wsData, rounded corners=4pt] (\bl,0.30) rectangle (12.05,1.20);
+\node[text=white, font=\sffamily\scriptsize, anchor=west] at (\bl+0.25,\yData)
+  {\textsc{storage} · MongoDB + GridFS};
+\node[text=white!80, font=\sffamily\scriptsize] at (6.95,\yData) {raw images};
+\node[text=white!80, font=\sffamily\scriptsize] at (9.25,\yData) {CLIP embeddings};
+\node[text=white!80, font=\sffamily\scriptsize] at (11.20,\yData) {\code{features.f2}};
+
+\fill[wsData, rounded corners=4pt] (12.35,0.30) rectangle (\br,1.20);
+\node[text=white, font=\sffamily\scriptsize, anchor=west] at (12.80,\yData)
+  {\textsc{JSON artifacts} · \code{f5}, \code{f6} · per db};
+
+% ===== povezave ===========================================================
+\foreach \s/\r/\c in {s1/r1/fOne, s2/r2/fTwo, s3/r3/fThree, s4/r4/fFive, s5/r5/fSix}
+  {\draw[flow=\c] (\s.south) -- (\r.north);}
+\foreach \r/\m/\c in {r1/m1a/fOne, r2/m2a/fTwo, r3/m3a/fThree, r4/m4a/fFive, r5/m5a/fSix}
+  {\draw[flow=\c] (\r.south) -- (\m.north);}
+
+% modeli <-> storage; F5 bere vektorje CLIP iz baze in piše artefakte JSON
+\foreach \x/\c in {\cA/fOne, \cB/fTwo, \cD/fFive, \cE/fSix}
+  {\draw[biflow=\c] (\x,2.07) -- (\x,1.24);}
+\draw[biflow=fFive] (12.10,2.07) -- (9.90,1.24);
+
+% ===== legenda ============================================================
+% Vzorčna ploščica za legendo: brez text width, sicer podeduje širino
+% modelnih škatel (2,95 cm) in prekrije besedilo legende.
+\tikzset{swatch/.style = {rounded corners=1.5pt, draw=wsGrey, line width=0.7pt,
+                          fill=wsGreyFill, minimum width=0.55cm,
+                          minimum height=0.30cm, inner sep=0pt}}
+
+\node[font=\sffamily\scriptsize, text=fTwo!85!black, anchor=west] at (\bl,-0.32) {$\bigstar$};
+\node[font=\sffamily\scriptsize, text=wsInk, anchor=west] at (\bl+0.36,-0.32)
+  {trained or adapted in this work};
+\node[swatch] at (8.05,-0.32) {};
+\node[font=\sffamily\scriptsize, text=wsInk, anchor=west] at (8.40,-0.32)
+  {pretrained, frozen};
+\draw[biflow=wsData] (12.85,-0.32) -- (13.55,-0.32);
+\node[font=\sffamily\scriptsize, text=wsInk, anchor=west] at (13.65,-0.32)
+  {results written and read};
+
+\end{tikzpicture}
