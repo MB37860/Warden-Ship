@@ -288,6 +288,16 @@ images into the chest, pick which pipelines to run, and start walking.
 > First run downloads CLIP weights from Hugging Face (~600 MB). Everything
 > after that is local.
 
+> [!IMPORTANT]
+> **What ships and what doesn't.** The F5 year head (1.2 MB) is committed, so
+> dating works out of the box. The fine-tuned F2 classifier and the art-tuned
+> CLIP/ArcFace checkpoints are multi-gigabyte and are *not* in this repository —
+> without them F2 falls back to CLIP zero-shot (the 25.8 % / 57.7 % / 56.0 %
+> row above) and F1 uses stock CLIP. Train and export them with the jobs in
+> [`backend/training/`](backend/training/), then point `F2_MODEL_PATH` and
+> `CLIP_MODEL_PATH` at the results. `GET /api/f2/health` tells you which model
+> is actually loaded.
+
 **Checks:**
 
 ```bash
