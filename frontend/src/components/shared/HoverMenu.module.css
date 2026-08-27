@@ -1,0 +1,203 @@
+.menuRoot {
+  position: absolute;
+  right: clamp(14px, 2.8vw, 34px);
+  top: 50%;
+  transform: translateY(-50%);
+  width: min(36vw, 460px);
+  min-width: 300px;
+  z-index: 1200;
+  pointer-events: auto;
+}
+
+.menuCard {
+  pointer-events: auto;
+  position: relative;
+  z-index: 1210;
+  border-radius: 24px;
+  border: 1px solid rgba(233, 191, 121, 0.32);
+  background:
+    radial-gradient(
+      circle at 10% -25%,
+      rgba(236, 183, 91, 0.2),
+      rgba(0, 0, 0, 0) 48%
+    ),
+    linear-gradient(145deg, rgba(26, 19, 13, 0.92), rgba(12, 9, 6, 0.88));
+  box-shadow:
+    0 40px 80px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 224, 174, 0.18);
+  backdrop-filter: blur(7px);
+  padding: clamp(16px, 2.3vw, 24px);
+  animation: menu-enter 0.32s ease-out;
+}
+
+.menuHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.menuEyebrow {
+  margin: 0;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(238, 207, 146, 0.8);
+}
+
+.statePill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(229, 190, 120, 0.44);
+  color: #f5ddb1;
+  background: rgba(255, 205, 120, 0.08);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.menuTitle {
+  margin: 10px 0 0;
+  font-family: "IM Fell English", serif;
+  font-size: clamp(24px, 3.4vw, 34px);
+  letter-spacing: 0.02em;
+  line-height: 1.06;
+  color: #f4e2c0;
+}
+
+.menuSubtitle {
+  margin: 8px 0 0;
+  color: rgba(231, 212, 178, 0.86);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.actionRow {
+  margin-top: 16px;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  z-index: 1220;
+}
+
+.primaryButton,
+.secondaryButton {
+  border-radius: 12px;
+  border: 1px solid transparent;
+  min-height: 42px;
+  padding: 10px 14px;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 1230;
+  appearance: none;
+  touch-action: manipulation;
+  user-select: none;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.primaryButton {
+  background: linear-gradient(145deg, #f0c278, #d7a15f);
+  border-color: rgba(255, 236, 199, 0.35);
+  color: #2f1d0f;
+  box-shadow: 0 8px 24px rgba(225, 160, 72, 0.3);
+  cursor: pointer;
+}
+
+.primaryButton:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(145deg, #f6cf8d, #e4af67);
+}
+
+.secondaryButton {
+  background: rgba(255, 244, 228, 0.08);
+  border-color: rgba(229, 190, 119, 0.42);
+  color: rgba(245, 221, 177, 0.92);
+  cursor: pointer;
+}
+
+.secondaryButton:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 244, 228, 0.12);
+}
+
+.featureGrid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.featureCard {
+  border-radius: 14px;
+  border: 1px solid rgba(238, 205, 147, 0.25);
+  background: rgba(19, 14, 9, 0.74);
+  padding: 12px;
+}
+
+.featureLabel {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #f5dfb6;
+}
+
+.featureDescription {
+  margin: 6px 0 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(223, 202, 168, 0.84);
+}
+
+.featureCard.locked {
+  opacity: 0.64;
+}
+
+.featureCard.unlocked {
+  box-shadow: inset 0 0 0 1px rgba(242, 194, 105, 0.15);
+}
+
+@keyframes menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .menuRoot {
+    left: 50%;
+    right: auto;
+    top: auto;
+    bottom: 12px;
+    transform: translateX(-50%);
+    width: min(94vw, 520px);
+    min-width: 0;
+  }
+
+  .featureGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .actionRow {
+    grid-template-columns: 1fr;
+  }
+}

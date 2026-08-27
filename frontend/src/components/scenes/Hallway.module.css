@@ -1,0 +1,70 @@
+.root {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 40%, #1a1109 0%, #0d0904 70%);
+  overflow: hidden;
+}
+
+.hint {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 6px 16px;
+  font-family: "IM Fell English", serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.04em;
+  color: rgba(245, 230, 200, 0.7);
+  background: rgba(13, 9, 4, 0.55);
+  border: 1px solid rgba(184, 134, 11, 0.25);
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+/* WebGL-unavailable fallback: the same six doors as buttons. */
+.fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  background: radial-gradient(circle at 50% 40%, #1a1109 0%, #0d0904 70%);
+}
+
+.fallbackTitle {
+  margin: 0;
+  font-family: "IM Fell English", serif;
+  font-size: 2rem;
+  color: rgba(245, 230, 200, 0.92);
+  letter-spacing: 0.06em;
+}
+
+.fallbackDoors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  gap: 14px;
+  max-width: 460px;
+}
+
+.fallbackDoor {
+  padding: 16px 18px;
+  font-family: "IM Fell English", serif;
+  font-size: 1rem;
+  color: rgba(245, 230, 200, 0.9);
+  background: linear-gradient(180deg, rgba(58, 38, 19, 0.9), rgba(34, 20, 10, 0.9));
+  border: 1px solid rgba(184, 134, 11, 0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.fallbackDoor:hover {
+  background: linear-gradient(180deg, rgba(90, 58, 28, 0.95), rgba(58, 38, 19, 0.95));
+  border-color: rgba(200, 148, 31, 0.8);
+  transform: translateY(-2px);
+}

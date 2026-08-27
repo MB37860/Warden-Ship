@@ -1,0 +1,110 @@
+.appRoot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at 24% 18%,
+    #274766 0%,
+    #0c1a29 52%,
+    #02070e 100%
+  );
+}
+
+.showcaseActive,
+.showcaseActive * {
+  cursor: none !important;
+}
+
+.sceneStage {
+  position: absolute;
+  inset: 0;
+}
+
+.sceneLoading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(231, 190, 111, 0.14), transparent 28%),
+    #080503;
+  color: rgba(245, 230, 200, 0.78);
+  font-family: "IM Fell English", serif;
+  font-size: 0.76rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.sceneFade {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.sceneFadeActive {
+  opacity: 1;
+}
+
+.showcaseOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 150;
+  pointer-events: none;
+  cursor: none;
+}
+
+.showcaseTitle {
+  position: absolute;
+  left: clamp(20px, 4vw, 50px);
+  bottom: clamp(22px, 4vh, 42px);
+  display: grid;
+  gap: 5px;
+  color: rgba(240, 246, 252, 0.94);
+  text-shadow: 0 3px 18px rgba(0, 0, 0, 0.78);
+}
+
+.showcaseTitle span {
+  color: rgba(200, 220, 238, 0.82);
+  font-size: 0.6rem;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.showcaseTitle strong {
+  font-family: "IM Fell English", serif;
+  font-size: clamp(1.22rem, 2.6vw, 1.75rem);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.showcaseTitle small {
+  color: rgba(206, 221, 234, 0.82);
+  font-size: clamp(0.64rem, 1vw, 0.76rem);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.showcaseExit {
+  position: absolute;
+  right: clamp(18px, 3vw, 38px);
+  bottom: clamp(22px, 4vh, 42px);
+  pointer-events: auto;
+  border: 1px solid rgba(202, 220, 235, 0.34);
+  border-radius: 999px;
+  background: rgba(3, 9, 17, 0.5);
+  padding: 8px 13px;
+  color: rgba(209, 224, 238, 0.8);
+  cursor: pointer !important;
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 860px) {
+
+}

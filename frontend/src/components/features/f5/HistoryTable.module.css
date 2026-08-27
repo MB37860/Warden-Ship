@@ -1,0 +1,702 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #f6e8c5;
+  background: #0d0904;
+}
+
+/* The cabin fills the whole frame — chrome floats over it on demand. */
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.stage canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.chromeToggle {
+  left: 16px;
+}
+
+/* Top bar overlay -------------------------------------------------------- */
+.topBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 14px 18px 22px 150px;
+  background: linear-gradient(180deg, rgba(8, 6, 3, 0.9), rgba(8, 6, 3, 0.5) 60%, transparent);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-120%);
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.topBarOpen {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.topBarTitle {
+  min-width: 0;
+}
+
+.root::-webkit-scrollbar {
+  width: 10px;
+}
+
+.root::-webkit-scrollbar-track {
+  background: rgba(8, 16, 16, 0.48);
+}
+
+.root::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(221, 160, 64, 0.72), rgba(95, 155, 173, 0.58));
+  border-radius: 999px;
+  border: 2px solid rgba(8, 16, 16, 0.62);
+}
+
+.roomGrain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  background-image:
+    radial-gradient(circle at 20px 14px, rgba(240, 210, 149, 0.08) 1px, transparent 1.6px),
+    linear-gradient(rgba(230, 196, 126, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(230, 196, 126, 0.05) 1px, transparent 1px);
+  background-size: 46px 46px, 58px 58px, 58px 58px;
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 92%);
+}
+
+.headerPanel,
+.experimentGrid {
+  position: relative;
+  z-index: 1;
+}
+
+.headerPanel {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+  padding: 4px 2px;
+}
+
+.eyebrow,
+.panelTitle,
+.metricGrid span {
+  margin: 0 0 5px;
+  color: rgba(232, 203, 148, 0.84);
+  font-size: 0.65rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.header {
+  margin: 0;
+  font-family: "IM Fell English", serif;
+  font-size: clamp(1.65rem, 3vw, 2.9rem);
+  letter-spacing: 0;
+  text-shadow: 0 8px 28px rgba(0, 0, 0, 0.38);
+}
+
+.sub {
+  margin: 6px 0 0;
+  max-width: 62ch;
+  color: rgba(239, 225, 194, 0.82);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.experimentGrid {
+  display: grid;
+  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  gap: 16px;
+  min-height: clamp(620px, calc(100vh - 178px), 760px);
+}
+
+.sidePanel,
+.canvasWrap,
+.selectedPanel,
+.pipelineBox {
+  border: 1px solid rgba(231, 190, 111, 0.22);
+  background:
+    linear-gradient(155deg, rgba(33, 43, 37, 0.94), rgba(16, 24, 23, 0.86)),
+    rgba(16, 24, 23, 0.92);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.36);
+}
+
+.sidePanel {
+  position: absolute;
+  top: 76px;
+  left: 16px;
+  bottom: 16px;
+  z-index: 16;
+  width: min(330px, calc(100vw - 32px));
+  border-radius: 10px;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  overflow: auto;
+  scrollbar-color: rgba(221, 160, 64, 0.68) rgba(8, 16, 16, 0.48);
+  scrollbar-width: thin;
+  opacity: 0;
+  transform: translateX(-118%);
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.sidePanelOpen {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+.sidePanel::-webkit-scrollbar {
+  width: 9px;
+}
+
+.sidePanel::-webkit-scrollbar-track {
+  background: rgba(8, 16, 16, 0.48);
+  border-radius: 999px;
+}
+
+.sidePanel::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(221, 160, 64, 0.72), rgba(95, 155, 173, 0.58));
+  border-radius: 999px;
+  border: 2px solid rgba(8, 16, 16, 0.62);
+}
+
+.canvasWrap {
+  position: relative;
+  height: clamp(620px, calc(100vh - 178px), 760px);
+  min-height: 620px;
+  border-radius: 8px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, rgba(29, 19, 12, 0.35), rgba(8, 12, 12, 0.7)),
+    #120d09;
+}
+
+.canvasWrap canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.canvasWrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 110px rgba(0, 0, 0, 0.44),
+    inset 0 1px 0 rgba(255, 228, 166, 0.1),
+    inset 0 -1px 0 rgba(77, 49, 25, 0.45);
+}
+
+.mapEraLegend {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 16px;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.mapEraLegend span {
+  min-height: 26px;
+  border: 1px solid rgba(75, 47, 20, 0.3);
+  border-radius: 6px;
+  padding: 5px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(240, 218, 166, 0.82);
+  color: rgba(50, 32, 15, 0.92);
+  font-size: 0.68rem;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.24);
+}
+
+.mapEraLegend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.backBtn,
+.eraButton {
+  border: 1px solid rgba(231, 190, 111, 0.3);
+  background:
+    linear-gradient(180deg, rgba(33, 52, 49, 0.84), rgba(16, 28, 27, 0.82));
+  color: #f6e8c5;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.backBtn {
+  padding: 9px 12px;
+  font-family: "IM Fell English", serif;
+  min-height: 38px;
+}
+
+.viewBadge {
+  min-height: 38px;
+  border: 1px solid rgba(231, 190, 111, 0.28);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: rgba(12, 24, 23, 0.62);
+  color: rgba(232, 203, 148, 0.9);
+  font-family: "IM Fell English", serif;
+  display: inline-flex;
+  align-items: center;
+}
+
+.backBtn:hover,
+.backBtnActive,
+.eraButton:hover,
+.eraButtonActive {
+  border-color: rgba(221, 160, 64, 0.74);
+  background:
+    linear-gradient(180deg, rgba(90, 61, 30, 0.84), rgba(47, 39, 29, 0.84));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+
+.backBtn:hover,
+.eraButton:hover {
+  transform: translateY(-1px);
+}
+
+.statusPill {
+  min-width: 130px;
+  border: 1px solid rgba(231, 190, 111, 0.26);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: rgba(11, 20, 20, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 235, 190, 0.08);
+  display: grid;
+  gap: 3px;
+}
+
+.statusPill span,
+.readoutBox span {
+  color: rgba(232, 203, 148, 0.78);
+  font-size: 0.66rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.statusPill strong,
+.readoutBox strong {
+  color: #fff1c8;
+  font-size: 0.95rem;
+  line-height: 1.15;
+}
+
+.metricGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.metricGrid div {
+  border-radius: 8px;
+  border: 1px solid rgba(231, 190, 111, 0.14);
+  background:
+    linear-gradient(180deg, rgba(19, 31, 30, 0.74), rgba(8, 17, 16, 0.66));
+  padding: 10px;
+  display: grid;
+  gap: 5px;
+}
+
+.metricGrid strong {
+  color: #fff1c8;
+  font-size: 1rem;
+}
+
+.readoutBox {
+  border: 1px solid rgba(231, 190, 111, 0.17);
+  border-radius: 8px;
+  padding: 11px;
+  background:
+    linear-gradient(135deg, rgba(109, 74, 35, 0.16), rgba(13, 30, 29, 0.7)),
+    rgba(9, 18, 18, 0.72);
+  display: grid;
+  gap: 9px;
+}
+
+.eraStrip {
+  display: flex;
+  gap: 3px;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(4, 11, 11, 0.72);
+}
+
+.eraStrip span {
+  min-width: 9px;
+  height: 100%;
+}
+
+.mapInstructions {
+  border: 1px solid rgba(231, 190, 111, 0.16);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: rgba(9, 18, 18, 0.5);
+  color: rgba(239, 225, 194, 0.76);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.timelinePanel {
+  border: 1px solid rgba(231, 190, 111, 0.17);
+  border-radius: 8px;
+  padding: 11px;
+  background:
+    linear-gradient(150deg, rgba(19, 31, 30, 0.72), rgba(9, 17, 17, 0.74)),
+    rgba(8, 16, 16, 0.72);
+  display: grid;
+  gap: 9px;
+}
+
+.timelineRail {
+  display: flex;
+  gap: 4px;
+  height: 5px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(4, 11, 11, 0.7);
+}
+
+/* Keys the colour used for years the pipeline invented. */
+.estimatedLegend {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 8px;
+  padding: 5px 9px;
+  border: 1px solid rgba(255, 157, 60, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 157, 60, 0.09);
+  font-size: 0.68rem;
+  line-height: 1.3;
+}
+
+.estimatedLegend span:first-child {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255, 157, 60, 0.85);
+}
+
+.timelineRail span {
+  flex: 1;
+  min-width: 7px;
+}
+
+.timelineList {
+  display: grid;
+  gap: 6px;
+}
+
+.timelineButton {
+  border: 1px solid rgba(231, 190, 111, 0.14);
+  border-radius: 7px;
+  padding: 7px 8px;
+  background: rgba(7, 16, 16, 0.44);
+  color: rgba(239, 225, 194, 0.88);
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.timelineButton:hover,
+.timelineButtonActive {
+  border-color: rgba(221, 160, 64, 0.72);
+  background: rgba(72, 49, 25, 0.62);
+}
+
+.timelineButton:hover {
+  transform: translateX(2px);
+}
+
+.timelineButton span {
+  color: rgba(232, 203, 148, 0.9);
+  font-family: "IM Fell English", serif;
+  font-size: 0.8rem;
+}
+
+.timelineButton strong {
+  min-width: 0;
+  overflow: hidden;
+  color: rgba(255, 242, 207, 0.92);
+  font-size: 0.74rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pipelineBox {
+  border-radius: 8px;
+  padding: 10px;
+  display: grid;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: rgba(239, 225, 194, 0.86);
+}
+
+.pipelineBox strong {
+  color: #dda040;
+}
+
+.pipelineTrack {
+  height: 8px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(5, 13, 12, 0.82);
+}
+
+.pipelineTrack span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #5f9bad, #dda040);
+  box-shadow: 0 0 18px rgba(221, 160, 64, 0.35);
+}
+
+.eraButton {
+  display: grid;
+  grid-template-columns: 12px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  padding: 10px;
+  text-align: left;
+  font-size: 0.78rem;
+  min-height: 42px;
+}
+
+.clusterSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  box-shadow: 0 0 14px currentColor;
+}
+
+.selectedPanel {
+  margin-top: 8px;
+  border-radius: 8px;
+  padding: 11px;
+  display: grid;
+  gap: 7px;
+  color: rgba(239, 225, 194, 0.84);
+  font-size: 0.8rem;
+  line-height: 1.35;
+}
+
+.selectedPanel strong {
+  color: #fff3d0;
+  line-height: 1.25;
+}
+
+.previewFrame {
+  height: 132px;
+  border-radius: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(231, 190, 111, 0.18);
+  background:
+    linear-gradient(145deg, rgba(28, 42, 39, 0.6), rgba(8, 16, 16, 0.76));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(239, 225, 194, 0.7);
+  text-align: center;
+}
+
+.previewFrame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.96) contrast(1.04);
+}
+
+.scoreRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.scoreRow span {
+  border: 1px solid rgba(231, 190, 111, 0.18);
+  background: rgba(221, 160, 64, 0.1);
+  border-radius: 999px;
+  padding: 5px 8px;
+  color: rgba(255, 240, 205, 0.88);
+  font-size: 0.7rem;
+}
+
+.webglFallback {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  color: rgba(255, 242, 207, 0.9);
+  background:
+    radial-gradient(circle at center, rgba(110, 77, 37, 0.2), transparent 38%),
+    rgba(8, 13, 13, 0.9);
+}
+
+.webglFallback strong {
+  color: #fff1c8;
+  font-size: 1.05rem;
+}
+
+.webglFallback span {
+  max-width: 44ch;
+  color: rgba(239, 225, 194, 0.75);
+  line-height: 1.45;
+}
+
+.emptyMapState {
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(180deg, rgba(29, 19, 12, 0.34), rgba(8, 12, 12, 0.72)),
+    repeating-linear-gradient(90deg, rgba(231, 190, 111, 0.05) 0 1px, transparent 1px 72px),
+    repeating-linear-gradient(0deg, rgba(231, 190, 111, 0.04) 0 1px, transparent 1px 72px),
+    #120d09;
+}
+
+.emptyMapCard {
+  width: min(460px, 100%);
+  border: 1px solid rgba(231, 190, 111, 0.24);
+  border-radius: 8px;
+  padding: 22px;
+  display: grid;
+  gap: 10px;
+  background:
+    linear-gradient(150deg, rgba(33, 43, 37, 0.94), rgba(16, 24, 23, 0.9)),
+    rgba(16, 24, 23, 0.92);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.emptyMapCard span {
+  color: rgba(232, 203, 148, 0.82);
+  font-size: 0.68rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.emptyMapCard strong {
+  color: #fff1c8;
+  font-family: "IM Fell English", serif;
+  font-size: clamp(1.25rem, 3vw, 1.8rem);
+  line-height: 1.15;
+}
+
+.emptyMapCard p {
+  margin: 0;
+  color: rgba(239, 225, 194, 0.76);
+  font-size: 0.86rem;
+  line-height: 1.48;
+}
+
+@media (max-width: 980px) {
+  .headerPanel,
+  .experimentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .headerPanel {
+    display: grid;
+  }
+
+  .controlsRow {
+    justify-content: flex-start;
+    margin-right: 0;
+  }
+
+  .experimentGrid {
+    min-height: 580px;
+  }
+
+  .canvasWrap {
+    height: 580px;
+    min-height: 580px;
+  }
+
+  .sidePanel {
+    max-height: none;
+  }
+
+  .statusPill {
+    width: fit-content;
+  }
+
+}
+
+@media (max-width: 620px) {
+  .root {
+    padding: 10px;
+  }
+
+  .metricGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .canvasWrap {
+    height: 520px;
+    min-height: 520px;
+  }
+
+}

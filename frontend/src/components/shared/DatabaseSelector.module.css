@@ -1,0 +1,406 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  z-index: 20000;
+  backdrop-filter: blur(2px);
+  padding: 18px;
+}
+
+.modal {
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, #0f0f2e 0%, #1a1a3f 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 0 40px rgba(100, 150, 255, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+  max-width: 520px;
+  width: 90%;
+  animation: slideIn 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.processingDock {
+  position: relative;
+  z-index: 1;
+  width: min(340px, 90vw);
+  max-height: 72vh;
+  overflow-y: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(100, 150, 255, 0.24);
+  background:
+    radial-gradient(
+      circle at 18% -18%,
+      rgba(100, 150, 255, 0.24),
+      transparent 48%
+    ),
+    linear-gradient(135deg, rgba(10, 14, 34, 0.96), rgba(16, 22, 48, 0.96));
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.52),
+    0 0 28px rgba(100, 150, 255, 0.14);
+  padding: 14px;
+}
+
+.processingHeader,
+.processingMeta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.processingHeader {
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.processingHeader span {
+  color: rgba(226, 236, 255, 0.76);
+  font-size: 0.68rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.processingHeader strong {
+  color: #ffffff;
+  font-size: 1.28rem;
+}
+
+.processingList {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.processingItem {
+  display: grid;
+  gap: 7px;
+  padding: 10px;
+  border-radius: 8px;
+  background: rgba(100, 150, 255, 0.07);
+  border: 1px solid rgba(100, 150, 255, 0.16);
+}
+
+.processingMeta span {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.processingMeta strong {
+  color: #8fb1ff;
+  font-size: 0.76rem;
+}
+
+.processingTrack {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(100, 150, 255, 0.2);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.processingFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6496ff, #4ade80);
+  box-shadow: 0 0 12px rgba(100, 150, 255, 0.42);
+  transition: width 240ms ease;
+}
+
+.processingError {
+  margin: 0;
+  color: rgba(255, 130, 120, 0.95);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.processingMessage {
+  margin: 0;
+  color: rgba(226, 236, 255, 0.68);
+  font-size: 0.74rem;
+  line-height: 1.35;
+}
+
+.header {
+  padding: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #fff;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+  margin: 6px 0 0 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.content {
+  padding: 20px 24px 24px;
+}
+
+.databaseList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.dbOption {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(100, 150, 255, 0.08);
+  border: 1px solid rgba(100, 150, 255, 0.2);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dbOption input {
+  margin: 0;
+  cursor: pointer;
+  accent-color: #6496ff;
+}
+
+.dbOption:hover {
+  background: rgba(100, 150, 255, 0.12);
+  border-color: rgba(100, 150, 255, 0.4);
+}
+
+.dbOption input:checked {
+  outline: 2px solid #6496ff;
+  outline-offset: -4px;
+}
+
+.dbLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dbName {
+  font-weight: 600;
+  color: #fff;
+}
+
+.dbCount {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.dbDesc {
+  font-size: 0.75rem;
+  color: rgba(100, 150, 255, 0.7);
+  margin-top: 2px;
+}
+
+.deleteButton {
+  border: 1px solid rgba(255, 122, 95, 0.34);
+  border-radius: 6px;
+  background: rgba(255, 85, 60, 0.1);
+  color: rgba(255, 185, 165, 0.95);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 7px 9px;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: rgba(255, 85, 60, 0.16);
+}
+
+.deleteButton:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.emptyState {
+  border: 1px dashed rgba(130, 170, 230, 0.32);
+  border-radius: 8px;
+  color: rgba(220, 232, 255, 0.72);
+  line-height: 1.4;
+  padding: 14px;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(100, 150, 255, 0.2);
+  border-top-color: #6496ff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-weight: 600;
+  color: #fff;
+  font-size: 0.875rem;
+}
+
+.input {
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(100, 150, 255, 0.3);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.input:focus {
+  outline: none;
+  background: rgba(0, 0, 0, 0.5);
+  border-color: #6496ff;
+  box-shadow: 0 0 8px rgba(100, 150, 255, 0.3);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.error {
+  padding: 10px 12px;
+  background: rgba(255, 68, 68, 0.15);
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: 6px;
+  color: #ff4444;
+  font-size: 0.875rem;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.primaryButton {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #6496ff 0%, #4a78e0 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(100, 150, 255, 0.3);
+}
+
+.primaryButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(100, 150, 255, 0.4);
+}
+
+.primaryButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.primaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 920px) {
+  .overlay {
+    flex-direction: column;
+    justify-content: flex-start;
+    overflow-y: auto;
+  }
+
+  .modal,
+  .processingDock {
+    width: min(520px, 100%);
+    max-height: none;
+  }
+}

@@ -1,0 +1,41 @@
+# Python dependencies bundled into the Electron desktop build.
+#
+# Built into a portable, standalone interpreter by scripts/build-python-runtime.mjs
+# (NOT the repo .venv). Model weights and fonts are still fetched online on first
+# use, per project decision — only the libraries live here.
+#
+# Torch is pinned to the CPU wheels for portability across machines without a
+# matching CUDA driver. Drop the extra-index-url + add the cuda build if you want
+# GPU on a specific OS.
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# --- Core: the backend BOOTS with just these (everything below is lazy) ---
+flask
+flask-cors
+flask-limiter
+python-dotenv
+pymongo
+pillow
+numpy==1.26.4
+
+# --- F1 semantic search + F2 classification (CLIP) ---
+torch
+transformers
+
+# --- F6 clustering ---
+opencv-python==4.11.0.86
+opencv-contrib-python==4.11.0.86
+scikit-learn==1.8.0
+protobuf==4.25.9
+setuptools<82
+tqdm
+
+# --- F6 emotion / pose: HEAVY (~2 GB) and have runtime fallbacks. ---
+# Comment this block out to ship a much smaller bundle; emotion/pose features
+# then degrade to their portable fallbacks instead of failing.
+# RetinaFace powers the portrait-pose channel. It used to arrive as a
+# deepface dependency; deepface itself is gone, so declare it directly.
+retina-face==0.0.17
+mediapipe==0.10.21
+tensorflow==2.16.1
+tf-keras==2.16.0

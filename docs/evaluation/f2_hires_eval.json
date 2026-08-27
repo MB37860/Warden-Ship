@@ -1,0 +1,135 @@
+{
+  "tag": "hires-vitl336",
+  "model": "data/f2_dataset_hires/f2_image_model.pt",
+  "img_size": 336,
+  "evaluated": 1500,
+  "available": 12680,
+  "sample": 1500,
+  "seed": 42,
+  "elapsed_s": 2838.6,
+  "heads": {
+    "style": {
+      "acc": 0.7697715289982425,
+      "ci95": [
+        0.7444288542765384,
+        0.793298970668708
+      ],
+      "n": 1138
+    },
+    "genre": {
+      "acc": 0.8583128583128583,
+      "ci95": [
+        0.8376266517933288,
+        0.8767514359528745
+      ],
+      "n": 1221
+    },
+    "artist": {
+      "acc": 0.9352941176470588,
+      "ci95": [
+        0.8878608969164639,
+        0.9634888375544568
+      ],
+      "n": 170
+    }
+  },
+  "artist_per_class": {
+    "Theophile Steinlen": {
+      "acc": 1.0,
+      "n": 12
+    },
+    "Hryhorii Havrylenko": {
+      "acc": 0.9090909090909091,
+      "n": 11
+    },
+    "Zdzislaw Beksinski": {
+      "acc": 1.0,
+      "n": 11
+    },
+    "Camille Pissarro": {
+      "acc": 0.7272727272727273,
+      "n": 11
+    },
+    "Giovanni Battista Piranesi": {
+      "acc": 1.0,
+      "n": 10
+    },
+    "Scheiber Hug\u00f3": {
+      "acc": 1.0,
+      "n": 10
+    },
+    "Gustave Dor\u00e9": {
+      "acc": 1.0,
+      "n": 10
+    },
+    "Childe Hassam": {
+      "acc": 0.8888888888888888,
+      "n": 9
+    },
+    "Alfred Freddy Krupa": {
+      "acc": 0.875,
+      "n": 8
+    },
+    "Bela Czobel": {
+      "acc": 1.0,
+      "n": 8
+    },
+    "Henri Matisse": {
+      "acc": 1.0,
+      "n": 8
+    },
+    "Pyotr Konchalovsky": {
+      "acc": 1.0,
+      "n": 7
+    },
+    "Boris Kustodiev": {
+      "acc": 0.8571428571428571,
+      "n": 7
+    },
+    "Paul Cezanne": {
+      "acc": 0.6666666666666666,
+      "n": 6
+    },
+    "Paul Gauguin": {
+      "acc": 0.8333333333333334,
+      "n": 6
+    },
+    "John Singer Sargent": {
+      "acc": 1.0,
+      "n": 6
+    },
+    "Ivan Aivazovsky": {
+      "acc": 0.8333333333333334,
+      "n": 6
+    },
+    "Peter Paul Rubens": {
+      "acc": 1.0,
+      "n": 5
+    },
+    "Eugene Boudin": {
+      "acc": 1.0,
+      "n": 5
+    },
+    "Ilya Repin": {
+      "acc": 1.0,
+      "n": 4
+    },
+    "Camille Corot": {
+      "acc": 1.0,
+      "n": 4
+    },
+    "Roger Weik": {
+      "acc": 1.0,
+      "n": 3
+    },
+    "Raphael Kirchner": {
+      "acc": 1.0,
+      "n": 2
+    },
+    "Iv\u00e1n Shishkin": {
+      "acc": 1.0,
+      "n": 1
+    }
+  },
+  "mean_acc": 0.85445950165272
+}

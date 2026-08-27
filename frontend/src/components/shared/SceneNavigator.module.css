@@ -1,0 +1,282 @@
+.navigatorRoot {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 120;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+.toggleButton {
+  pointer-events: auto;
+  min-width: 190px;
+  border: 1px solid rgba(193, 226, 255, 0.42);
+  border-radius: 16px;
+  padding: 11px 14px;
+  background:
+    linear-gradient(145deg, rgba(8, 26, 44, 0.88), rgba(4, 15, 27, 0.95)),
+    radial-gradient(
+      circle at 25% 10%,
+      rgba(157, 211, 255, 0.25),
+      transparent 48%
+    );
+  box-shadow:
+    0 16px 32px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(229, 245, 255, 0.18);
+  display: grid;
+  grid-template-columns: minmax(42px, 1fr) auto minmax(42px, 1fr);
+  align-items: center;
+  column-gap: 6px;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.toggleButton:hover,
+.toggleButton:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(223, 244, 255, 0.74);
+  box-shadow:
+    0 20px 38px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(112, 184, 255, 0.2);
+  outline: none;
+}
+
+/* Icon lives in the left column and is centred within it, so it sits midway
+   between the button's left edge and the centred label. The empty ::after
+   spacer fills the equal-width right column to keep the label centred. */
+.compassBadge {
+  justify-self: start;
+  margin-left: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  border: 1px solid rgba(196, 231, 255, 0.74);
+  background: radial-gradient(
+    circle at 50% 38%,
+    rgba(29, 62, 94, 0.96),
+    rgba(8, 24, 40, 0.98) 72%
+  );
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(120, 178, 232, 0.14);
+  display: grid;
+  place-items: center;
+}
+
+.toggleButton::after {
+  content: "";
+}
+
+.navIcon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  filter: drop-shadow(0 0 3px rgba(255, 197, 112, 0.3));
+  transition: transform 320ms ease;
+}
+
+.toggleButton:hover .navIcon,
+.toggleButton:focus-visible .navIcon {
+  transform: rotate(22deg);
+}
+
+.activeScene {
+  color: rgba(241, 248, 255, 0.96);
+  font-family: "IM Fell English", serif;
+  letter-spacing: 0.06em;
+  font-size: 1.12rem;
+}
+
+.menuPanel {
+  pointer-events: auto;
+  margin-top: 10px;
+  width: min(360px, calc(100vw - 20px));
+  border-radius: 18px;
+  border: 1px solid rgba(191, 224, 252, 0.36);
+  background:
+    radial-gradient(
+      circle at 12% -22%,
+      rgba(153, 211, 255, 0.2),
+      transparent 42%
+    ),
+    linear-gradient(145deg, rgba(7, 23, 39, 0.94), rgba(4, 13, 24, 0.96));
+  box-shadow:
+    0 28px 50px rgba(1, 6, 12, 0.62),
+    inset 0 1px 0 rgba(232, 246, 255, 0.14);
+  padding: 14px;
+  backdrop-filter: blur(7px);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progressWrap {
+  display: grid;
+  gap: 5px;
+  min-width: 90px;
+}
+
+.progressLabel {
+  justify-self: end;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: rgba(200, 229, 251, 0.78);
+}
+
+.progressTrack {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(145, 190, 228, 0.2);
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,
+    rgba(119, 188, 247, 0.92),
+    rgba(207, 236, 255, 0.96)
+  );
+  transition: width 260ms ease;
+}
+
+.sceneList {
+  margin-top: 10px;
+  display: grid;
+  gap: 8px;
+  max-height: min(64vh, 545px);
+  overflow-y: auto;
+  padding-right: 3px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(177, 214, 245, 0.42) transparent;
+}
+
+.sceneButton {
+  border: 1px solid rgba(178, 214, 245, 0.34);
+  border-radius: 12px;
+  background: rgba(13, 35, 54, 0.6);
+  padding: 8px 9px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  color: rgba(222, 239, 253, 0.96);
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease,
+    background-color 180ms ease;
+}
+
+.sceneButton:hover,
+.sceneButton:focus-visible {
+  border-color: rgba(212, 237, 255, 0.7);
+  background: rgba(22, 50, 76, 0.74);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.sceneButtonActive {
+  border-color: rgba(224, 244, 255, 0.84);
+  background: linear-gradient(
+    140deg,
+    rgba(44, 93, 134, 0.92),
+    rgba(20, 57, 89, 0.96)
+  );
+  cursor: default;
+}
+
+.sceneButton:disabled {
+  opacity: 1;
+}
+
+.sceneIndex {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(190, 224, 251, 0.58);
+  display: grid;
+  place-items: center;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  background: rgba(7, 22, 36, 0.6);
+}
+
+.sceneMeta {
+  display: grid;
+  gap: 1px;
+}
+
+.sceneLabel {
+  font-family: "IM Fell English", serif;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  color: rgba(243, 249, 255, 0.96);
+}
+
+.sceneHint {
+  font-size: 0.61rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(183, 217, 246, 0.86);
+}
+
+.sceneState {
+  font-size: 0.58rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(202, 231, 252, 0.88);
+  padding: 4px 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(177, 214, 245, 0.4);
+}
+
+.panelFooter {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.footerPill {
+  padding: 5px 9px;
+  border-radius: 999px;
+  border: 1px solid rgba(180, 215, 244, 0.4);
+  background: rgba(12, 33, 51, 0.62);
+  font-size: 0.56rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(192, 222, 247, 0.9);
+}
+
+@media (max-width: 860px) {
+  .navigatorRoot {
+    top: 10px;
+    right: 10px;
+  }
+
+  .toggleButton {
+    min-width: 174px;
+    padding: 10px 12px;
+  }
+
+  .activeScene {
+    font-size: 1.02rem;
+  }
+
+  .menuPanel {
+    width: min(320px, calc(100vw - 20px));
+  }
+}

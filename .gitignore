@@ -1,0 +1,49 @@
+# --- Node -------------------------------------------------------------------
+node_modules/
+frontend/dist/
+frontend/release/
+frontend/runtime/
+.vite/
+*.log
+npm-debug.log*
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+env/
+
+# --- Local configuration ----------------------------------------------------
+# Machine-specific: copy .env.example and fill it in.
+.env
+
+# --- Datasets and model artifacts -------------------------------------------
+# Collections and trained weights stay out of git, with one exception: the F5
+# year head (1.2 MB) is committed, because without it the history map cannot
+# date an undated work. A retrained head needs `git add -f` again.
+/data/*
+!/data/f5_year_head/
+
+# --- Runtime state ----------------------------------------------------------
+backend/.pipeline_state.json
+backend/.pipeline_state.json.lock
+backend/.pipeline_state.json.*.tmp
+backend/work/
+# Pipeline output is regenerated per database; the sample collection is kept.
+backend/f5_history_map/output/*
+!backend/f5_history_map/output/avgust25/
+backend/f6_attributes/output/*
+!backend/f6_attributes/output/avgust25/
+
+# --- Editors / OS -----------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.swp
+
+# --- Test output ------------------------------------------------------------
+coverage/

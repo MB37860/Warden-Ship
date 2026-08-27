@@ -1,0 +1,166 @@
+{
+  "ok": true,
+  "generated_at": "2026-08-25T17:42:42Z",
+  "records": 100,
+  "embedding_source": "arcface_plus_visual_descriptors",
+  "projection": {
+    "method": "PCA",
+    "explained_variance": [
+      0.20612,
+      0.14136,
+      0.11901,
+      0.10907,
+      0.06074,
+      0.0527,
+      0.05003,
+      0.04678,
+      0.03682,
+      0.03056
+    ],
+    "explained_variance_2d": 0.34748,
+    "explained_variance_3d": 0.46649
+  },
+  "years": {
+    "min": 1110,
+    "max": 2021,
+    "known": 35,
+    "estimated": 65,
+    "undated": 0,
+    "year_head_available": true,
+    "model": {
+      "mae": 31.2,
+      "within_50y": 0.851,
+      "n_bins": 73,
+      "bin_years": 10
+    }
+  },
+  "clusters": [
+    {
+      "id": 0,
+      "label": "Balanced chart room",
+      "color": "#d8a24a",
+      "count": 33,
+      "year_min": 1110,
+      "year_max": 2020,
+      "representative_id": "6a8dd323c026841c6c47ae6a",
+      "representative_label": "unknown 0000019",
+      "centroid": [
+        0.0056816404685378075,
+        0.27609002590179443,
+        -0.31394556164741516
+      ]
+    },
+    {
+      "id": 1,
+      "label": "Light-washed deck",
+      "color": "#6fb6c8",
+      "count": 9,
+      "year_min": 1921,
+      "year_max": 2018,
+      "representative_id": "6a8dd324c026841c6c47ae9a",
+      "representative_label": "unknown 0000034",
+      "centroid": [
+        1.148307204246521,
+        -0.3687216639518738,
+        0.08883247524499893
+      ]
+    },
+    {
+      "id": 2,
+      "label": "Warm pigment route",
+      "color": "#d76f54",
+      "count": 2,
+      "year_min": 1957,
+      "year_max": 2021,
+      "representative_id": "6a8dd323c026841c6c47adae",
+      "representative_label": "My thoughts return to you",
+      "centroid": [
+        1.306298017501831,
+        0.22216597199440002,
+        -0.2720186114311218
+      ]
+    },
+    {
+      "id": 3,
+      "label": "Balanced chart room",
+      "color": "#7ebf7a",
+      "count": 15,
+      "year_min": 1602,
+      "year_max": 2013,
+      "representative_id": "6a8dd322c026841c6c47ad5a",
+      "representative_label": "Viking",
+      "centroid": [
+        0.0651618093252182,
+        -0.17661689221858978,
+        -0.27994707226753235
+      ]
+    },
+    {
+      "id": 4,
+      "label": "Linear rigging",
+      "color": "#b988d8",
+      "count": 6,
+      "year_min": 1526,
+      "year_max": 1955,
+      "representative_id": "6a8dd322c026841c6c47ad7c",
+      "representative_label": "Study for the two lovers",
+      "centroid": [
+        -0.0016023218631744385,
+        0.1884087175130844,
+        -0.3465535342693329
+      ]
+    },
+    {
+      "id": 5,
+      "label": "Soft atmosphere",
+      "color": "#d6c06c",
+      "count": 28,
+      "year_min": 1400,
+      "year_max": 2021,
+      "representative_id": "6a8dd323c026841c6c47ae22",
+      "representative_label": "unknown 0000008",
+      "centroid": [
+        -0.6169112324714661,
+        -0.05405207723379135,
+        0.24922549724578857
+      ]
+    },
+    {
+      "id": 6,
+      "label": "Light-washed deck",
+      "color": "#6f87c8",
+      "count": 7,
+      "year_min": 1736,
+      "year_max": 1995,
+      "representative_id": "6a8dd323c026841c6c47ad98",
+      "representative_label": "Self Portrait 11",
+      "centroid": [
+        0.45297831296920776,
+        -0.4577925205230713,
+        1.3435662984848022
+      ]
+    }
+  ],
+  "axes": [
+    {
+      "id": "planar_recession",
+      "label": "Planar - Recession",
+      "description": "Horizontal spread, aligned with the first projection mode."
+    },
+    {
+      "id": "linear_painterly",
+      "label": "Linear - Painterly",
+      "description": "Vertical spread, aligned with the second projection mode."
+    },
+    {
+      "id": "tonal_depth",
+      "label": "Tonal depth",
+      "description": "Third projection mode used by the 3D table."
+    }
+  ],
+  "notes": [
+    "Known dates are read from metadata, filenames and the WikiArt table.",
+    "Remaining dates come from the trained year head and are marked as estimates.",
+    "Works the year head cannot date stay undated - no date is invented from the style map."
+  ]
+}

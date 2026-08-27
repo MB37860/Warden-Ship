@@ -1,0 +1,843 @@
+.root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #080503;
+  color: #f5e6c8;
+}
+
+.root canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.webglFallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-content: center;
+  gap: 8px;
+  padding: 24px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(255, 153, 51, 0.18), transparent 32%),
+    linear-gradient(180deg, #1a0f07, #080503 74%);
+  color: #f5e6c8;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+}
+
+.webglFallback strong {
+  font-size: clamp(1.2rem, 4vw, 2rem);
+}
+
+.webglFallback span {
+  color: rgba(245, 230, 200, 0.72);
+  font-size: 0.82rem;
+}
+
+/* Visible themed chrome -------------------------------------------------- */
+.topNav {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.topNavRow {
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.brand {
+  display: grid;
+  gap: 1px;
+  padding: 8px 14px;
+  border: 1px solid rgba(184, 134, 11, 0.5);
+  border-radius: 7px;
+  background:
+    radial-gradient(circle at 14% 12%, rgba(255, 255, 255, 0.12), transparent 30%),
+    rgba(12, 8, 5, 0.74);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+  backdrop-filter: blur(2px);
+}
+
+.brand span {
+  font-size: 0.6rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: rgba(212, 160, 23, 0.86);
+}
+
+.brand strong {
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 1.05rem;
+  color: #f5e6c8;
+}
+
+.chromeButton {
+  border: 1px solid rgba(184, 134, 11, 0.5);
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.1), transparent 36%),
+    rgba(20, 12, 7, 0.78);
+  color: #f5e6c8;
+  padding: 8px 13px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: filter 160ms ease, transform 160ms ease, border-color 160ms ease;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.34);
+}
+
+.chromeButton:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+  border-color: rgba(255, 209, 122, 0.85);
+}
+
+.chromeButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
+.holdButton {
+  border-color: rgba(212, 160, 23, 0.85);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255, 196, 92, 0.32), transparent 60%),
+    linear-gradient(135deg, #5a3218, #2a1609);
+  color: #ffe9bf;
+  font-weight: 700;
+}
+
+/* Dataset pill ----------------------------------------------------------- */
+.datasetPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid rgba(184, 134, 11, 0.4);
+  border-radius: 999px;
+  background: rgba(12, 8, 5, 0.7);
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 0.72rem;
+  pointer-events: auto;
+}
+
+.datasetPill em {
+  font-style: normal;
+  color: rgba(245, 230, 200, 0.62);
+}
+
+.datasetPill b {
+  color: #ffd17a;
+}
+
+.datasetDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d4a017;
+  box-shadow: 0 0 8px rgba(212, 160, 23, 0.8);
+}
+
+.datasetDotOffline {
+  background: #6c170f;
+  box-shadow: 0 0 8px rgba(108, 23, 15, 0.7);
+}
+
+/* Run F6 overlay --------------------------------------------------------- */
+.runOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 13;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: radial-gradient(circle at 50% 42%, rgba(255, 153, 51, 0.12), rgba(8, 5, 3, 0.74) 46%);
+  pointer-events: none;
+}
+
+.runCard {
+  width: min(440px, calc(100vw - 36px));
+  display: grid;
+  gap: 12px;
+  padding: 26px 28px;
+  border: 1px solid rgba(92, 61, 30, 0.7);
+  border-radius: 10px;
+  background:
+    radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.26), transparent 24%),
+    linear-gradient(140deg, #f1dab0, #d4b176);
+  color: #2a1000;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
+}
+
+.runCard span {
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: #6a431e;
+}
+
+.runCard h2 {
+  margin: 0;
+  font-size: 1.34rem;
+}
+
+.runCard p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: #4a2c12;
+}
+
+.runButton {
+  justify-self: start;
+  margin-top: 4px;
+  border: 1px solid rgba(80, 0, 0, 0.5);
+  border-radius: 999px;
+  background: radial-gradient(circle at 32% 24%, #cf301f, #8b0000 72%);
+  color: #ffe9bf;
+  padding: 9px 20px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: filter 160ms ease, transform 160ms ease;
+  box-shadow: 0 12px 24px rgba(70, 0, 0, 0.4);
+}
+
+.runButton:not(:disabled):hover {
+  filter: brightness(1.16);
+  transform: translateY(-1px);
+}
+
+.runButton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.runProgress {
+  display: grid;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.runProgress > div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.74rem;
+  color: #4a2c12;
+}
+
+.runProgress progress {
+  width: 100%;
+  height: 10px;
+  appearance: none;
+  border: 1px solid rgba(92, 61, 30, 0.5);
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(42, 16, 0, 0.18);
+}
+
+.runProgress progress::-webkit-progress-bar {
+  background: rgba(42, 16, 0, 0.18);
+}
+
+.runProgress progress::-webkit-progress-value {
+  background: linear-gradient(90deg, #cf301f, #d4a017);
+}
+
+.runProgress progress::-moz-progress-bar {
+  background: linear-gradient(90deg, #cf301f, #d4a017);
+}
+
+.runError {
+  color: #6c170f;
+  font-style: italic;
+}
+
+/* Keyboard nav (a11y) ---------------------------------------------------- */
+.keyboardNav {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.keyboardNav:focus-within {
+  clip: auto;
+  clip-path: none;
+  inline-size: auto;
+  block-size: auto;
+  left: 12px;
+  bottom: 12px;
+  z-index: 12;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: min(92%, 720px);
+  padding: 8px;
+  border: 1px solid rgba(184, 134, 11, 0.5);
+  border-radius: 6px;
+  background: rgba(12, 8, 5, 0.86);
+  white-space: normal;
+}
+
+.keyboardNav button {
+  border: 1px solid rgba(184, 134, 11, 0.52);
+  border-radius: 4px;
+  background: #2c1a0e;
+  color: #f5e6c8;
+  padding: 6px 8px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.keyboardNav button:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.keyboardNav button:focus-visible {
+  outline: 2px solid #ffd17a;
+  outline-offset: 2px;
+}
+
+.notice {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  z-index: 10;
+  transform: translateX(-50%);
+  max-width: min(92%, 680px);
+  border: 1px solid rgba(92, 61, 30, 0.48);
+  border-radius: 5px;
+  background: rgba(245, 230, 200, 0.92);
+  color: #1a0a00;
+  padding: 10px 14px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.34);
+}
+
+.touchHint {
+  position: absolute;
+  left: 50%;
+  top: 74px;
+  z-index: 9;
+  transform: translateX(-50%);
+  border: 1px solid rgba(184, 134, 11, 0.34);
+  border-radius: 999px;
+  background: rgba(8, 5, 3, 0.52);
+  color: rgba(245, 230, 200, 0.78);
+  padding: 7px 12px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  pointer-events: none;
+  text-transform: lowercase;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  animation: hintBreathe 4.8s ease-in-out infinite;
+}
+
+@keyframes hintBreathe {
+  0%,
+  100% {
+    opacity: 0.54;
+  }
+
+  50% {
+    opacity: 0.92;
+  }
+}
+
+.statusOverlayDock {
+  position: absolute;
+  top: 76px;
+  right: 16px;
+  z-index: 8;
+  pointer-events: none;
+}
+
+.statusOverlay {
+  position: relative;
+  display: grid;
+  gap: 2px;
+  min-width: 118px;
+  border: 1px solid rgba(92, 61, 30, 0.42);
+  border-radius: 5px;
+  background:
+    radial-gradient(circle at 12% 14%, rgba(255, 255, 255, 0.18), transparent 22%),
+    rgba(245, 230, 200, 0.88);
+  color: #1a0a00;
+  padding: 8px 10px 9px;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.26);
+  pointer-events: auto;
+}
+
+.statusOverlay::before {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  background: #2a2a2a;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.statusOverlay span,
+.statusOverlay small {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.statusOverlay span {
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.statusMessage {
+  max-width: 13ch;
+  font-style: italic;
+  line-height: 1.15;
+}
+
+.statusOverlay small {
+  color: #5c3d1e;
+  font-size: 0.58rem;
+}
+
+.statusOverlay button {
+  position: relative;
+  justify-self: start;
+  margin-top: 4px;
+  border: 1px solid rgba(80, 0, 0, 0.42);
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 25%, #cf301f, #8b0000 70%);
+  color: #f5e6c8;
+  padding: 4px 8px;
+  font-family: inherit;
+  font-size: 0.56rem;
+  cursor: pointer;
+  overflow: hidden;
+  transition:
+    filter 160ms ease,
+    transform 160ms ease;
+}
+
+.statusOverlay button::after {
+  content: "";
+  position: absolute;
+  inset: 4px 11px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background:
+    linear-gradient(120deg, transparent 0 45%, rgba(35, 0, 0, 0.78) 46% 51%, transparent 52%),
+    linear-gradient(64deg, transparent 0 48%, rgba(35, 0, 0, 0.65) 49% 53%, transparent 54%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.statusOverlay button:not(:disabled):hover {
+  filter: brightness(1.18);
+  transform: translateY(-1px);
+}
+
+.statusOverlay button:not(:disabled):active::after {
+  transform: scaleX(1);
+  opacity: 1;
+}
+
+.statusOverlay button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.rollNumber {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.8ch;
+  height: 1.25em;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(92, 61, 30, 0.36);
+  font-variant-numeric: tabular-nums;
+}
+
+.rollNumber > span {
+  grid-area: 1 / 1;
+}
+
+.guideToggle {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 12;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(92, 61, 30, 0.62);
+  border-radius: 999px;
+  background: rgba(245, 230, 200, 0.92);
+  color: #2a1000;
+  font: 1.15rem/1 "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  cursor: pointer;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+}
+
+.guidePanel {
+  position: absolute;
+  top: 66px;
+  right: 18px;
+  z-index: 11;
+  width: min(290px, calc(100vw - 36px));
+  padding: 16px;
+  border: 1px solid rgba(92, 61, 30, 0.62);
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.28), transparent 24%),
+    #ead2a2;
+  color: #2a1000;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.34);
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.guidePanelOpen {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.guidePanel h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.guidePanel p {
+  margin: 7px 0;
+  font-size: 0.82rem;
+}
+
+.manifestPanel {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  z-index: 12;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  width: min(410px, calc(100vw - 36px));
+  max-height: min(68vh, 650px);
+  border: 1px solid rgba(92, 61, 30, 0.7);
+  background:
+    radial-gradient(circle at 14% 12%, rgba(255, 255, 255, 0.3), transparent 22%),
+    linear-gradient(135deg, #f3ddb2, #d8b578);
+  color: #2a1000;
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  box-shadow: 0 26px 60px rgba(0, 0, 0, 0.42);
+  opacity: 0;
+  transform: translateY(calc(100% + 28px));
+  pointer-events: none;
+  transition: opacity 220ms ease, transform 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.manifestPanelOpen {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.manifestPanel header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 12px;
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid rgba(92, 61, 30, 0.28);
+}
+
+.manifestPanel header small {
+  display: block;
+  color: #6a431e;
+  font-style: italic;
+}
+
+.manifestPanel h2 {
+  margin: 2px 0 0;
+  font-size: 1.18rem;
+}
+
+.manifestPanel header button {
+  border: 0;
+  background: transparent;
+  color: #2a1000;
+  font: 1.6rem/1 Georgia, serif;
+  cursor: pointer;
+}
+
+.manifestBody {
+  overflow: auto;
+  padding: 10px 12px 14px;
+}
+
+.manifestRow {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 9px 4px;
+  border-bottom: 1px solid rgba(92, 61, 30, 0.18);
+}
+
+.manifestRow img,
+.manifestRow span {
+  width: 58px;
+  height: 58px;
+  object-fit: cover;
+  background: rgba(42, 16, 0, 0.16);
+}
+
+.manifestRow h3,
+.manifestRow p {
+  margin: 0;
+}
+
+.manifestRow h3 {
+  font-size: 0.88rem;
+}
+
+.manifestRow p,
+.manifestRow small {
+  color: #6a431e;
+  font-size: 0.76rem;
+}
+
+.manifestEmpty,
+.manifestError {
+  margin: 18px 4px;
+  font-style: italic;
+}
+
+.manifestError {
+  color: #6c170f;
+}
+
+/* Button ghost variant ---------------------------------------------------- */
+.chromeButtonGhost {
+  opacity: 0.7;
+}
+
+/* Bottom results dock ----------------------------------------------------- */
+.resultDock {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  max-height: 46vh;
+  border-top: 1px solid rgba(184, 134, 11, 0.5);
+  background:
+    radial-gradient(circle at 8% 0%, rgba(255, 196, 92, 0.1), transparent 26%),
+    linear-gradient(180deg, rgba(30, 20, 12, 0.93), rgba(16, 10, 6, 0.97));
+  box-shadow: 0 -18px 44px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(3px);
+  font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
+  color: #f5e6c8;
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.resultDockClosed {
+  transform: translateY(0);
+}
+
+.resultDockHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 11px 20px;
+  border-bottom: 1px solid rgba(184, 134, 11, 0.22);
+}
+
+.resultDockTitle {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.resultDockTitle > span {
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(212, 160, 23, 0.86);
+}
+
+.resultDockTitle strong {
+  font-size: 1.12rem;
+  color: #ffe3ad;
+}
+
+.resultDockTitle strong em {
+  font-style: normal;
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: rgba(245, 230, 200, 0.62);
+}
+
+.resultDockTitle small {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: rgba(245, 230, 200, 0.58);
+}
+
+.resultDockToggle {
+  flex: 0 0 auto;
+  border: 1px solid rgba(184, 134, 11, 0.55);
+  border-radius: 999px;
+  background: rgba(20, 12, 7, 0.8);
+  color: #ffe3ad;
+  padding: 7px 16px;
+  font-family: inherit;
+  font-size: 0.76rem;
+  cursor: pointer;
+  transition: filter 160ms ease, transform 160ms ease;
+}
+
+.resultDockToggle:hover {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+.resultStrip {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 14px 20px 16px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184, 134, 11, 0.6) transparent;
+}
+
+.resultStrip::-webkit-scrollbar {
+  height: 9px;
+}
+
+.resultStrip::-webkit-scrollbar-thumb {
+  background: rgba(184, 134, 11, 0.55);
+  border-radius: 999px;
+}
+
+.resultCard {
+  flex: 0 0 auto;
+  width: 118px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* The thumbnail is a button so the artwork opens full screen, like the other
+   scenes; it must not look like one. */
+.resultCardButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: block;
+  border-radius: 7px;
+}
+
+.resultCardButton:focus-visible {
+  outline: 2px solid rgba(255, 209, 122, 0.9);
+  outline-offset: 3px;
+}
+
+.resultCard img,
+.resultNoImg {
+  width: 118px;
+  height: 118px;
+  object-fit: cover;
+  border-radius: 7px;
+  border: 1px solid rgba(184, 134, 11, 0.38);
+  background: rgba(42, 16, 0, 0.34);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.4);
+  transition: transform 160ms ease, border-color 160ms ease;
+}
+
+.resultNoImg {
+  display: grid;
+  place-items: center;
+  font-size: 1.5rem;
+  color: rgba(212, 160, 23, 0.7);
+}
+
+.resultCard:hover img,
+.resultCard:hover .resultNoImg,
+.resultCardButton:focus-visible img {
+  transform: translateY(-3px);
+  border-color: rgba(255, 209, 122, 0.85);
+}
+
+.resultCard figcaption {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.resultCard figcaption strong {
+  font-size: 0.72rem;
+  color: #f5e6c8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultCard figcaption span {
+  font-size: 0.66rem;
+  color: rgba(245, 230, 200, 0.56);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.resultEmpty {
+  margin: 8px 4px;
+  font-style: italic;
+  color: rgba(245, 230, 200, 0.6);
+}
+
+.resultMore {
+  flex: 0 0 auto;
+  align-self: center;
+  margin: 0;
+  padding: 0 14px;
+  font-size: 0.78rem;
+  color: rgba(212, 160, 23, 0.85);
+}

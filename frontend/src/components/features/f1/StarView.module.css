@@ -1,0 +1,1531 @@
+.starRoot {
+  --space-base: 3, 8, 22;
+  --space-nebula-one: 27, 82, 214;
+  --space-nebula-two: 197, 62, 255;
+  --space-nebula-three: 255, 108, 62;
+  --space-accent: 118, 207, 255;
+  --space-panel: 5, 16, 34;
+  --band-rotate: -11deg;
+  --band-scale: 1.25;
+  --band-opacity: 1;
+  --cluster-opacity: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 50% 120%,
+      rgba(var(--space-accent), 0.28),
+      transparent 44%
+    ),
+    radial-gradient(
+      circle at 71% 14%,
+      rgba(var(--space-nebula-three), 0.34),
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 26% 18%,
+      rgba(var(--space-nebula-one), 0.4),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 82% 38%,
+      rgba(var(--space-nebula-two), 0.26),
+      transparent 31%
+    ),
+    radial-gradient(
+      circle at 49% 78%,
+      rgba(var(--space-nebula-one), 0.24),
+      transparent 36%
+    ),
+    rgb(var(--space-base));
+  transition: background 260ms ease;
+}
+
+.cinematicMode,
+.cinematicMode * {
+  cursor: none !important;
+}
+
+.themeAuroraHeat {
+  --band-rotate: -13deg;
+  --band-scale: 1.28;
+  --band-opacity: 1;
+  --cluster-opacity: 1.08;
+}
+
+.themeNeboDeep {
+  --band-rotate: -22deg;
+  --band-scale: 1.34;
+  --band-opacity: 0.9;
+  --cluster-opacity: 0.9;
+}
+
+.themeSolarBloom {
+  --band-rotate: 9deg;
+  --band-scale: 1.3;
+  --band-opacity: 1.08;
+  --cluster-opacity: 1.16;
+}
+
+.themeGhostOcean {
+  --band-rotate: -5deg;
+  --band-scale: 1.18;
+  --band-opacity: 0.84;
+  --cluster-opacity: 0.78;
+}
+
+.themeEmberVoid {
+  --band-rotate: 18deg;
+  --band-scale: 1.36;
+  --band-opacity: 1.04;
+  --cluster-opacity: 1.2;
+}
+
+.starRoot::before,
+.starRoot::after {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+}
+
+.starRoot::before {
+  z-index: 1;
+  opacity: 0.86;
+  background:
+    radial-gradient(
+      ellipse at 18% 24%,
+      rgba(255, 255, 255, 0.16),
+      transparent 24%
+    ),
+    radial-gradient(
+      ellipse at 78% 72%,
+      rgba(var(--space-accent), 0.15),
+      transparent 28%
+    );
+  mask-image: radial-gradient(circle at 50% 54%, #000 0 72%, transparent 100%);
+}
+
+.starRoot::after {
+  z-index: 2;
+  background:
+    repeating-radial-gradient(
+      ellipse at 46% 52%,
+      rgba(255, 255, 255, 0.035) 0 1px,
+      transparent 1px 8px
+    ),
+    radial-gradient(
+      ellipse at 35% 45%,
+      rgba(var(--space-nebula-two), 0.25),
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse at 70% 62%,
+      rgba(var(--space-nebula-one), 0.2),
+      transparent 38%
+    ),
+    linear-gradient(
+      135deg,
+      transparent 0 38%,
+      rgba(var(--space-accent), 0.05) 47%,
+      transparent 58% 100%
+    );
+  filter: blur(0.3px);
+  mix-blend-mode: screen;
+}
+
+.nebulaLayer,
+.orbitLayer,
+.backgroundStarLayer,
+.galaxyBand,
+.spaceLightLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.spaceLightLayer {
+  z-index: 5;
+  overflow: hidden;
+  mix-blend-mode: screen;
+}
+
+.spaceLightCluster {
+  position: absolute;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.3),
+      rgba(var(--cluster-color), 0.46) 12%,
+      rgba(var(--cluster-color), 0.24) 32%,
+      rgba(var(--cluster-color), 0.075) 58%,
+      transparent 78%
+    );
+  filter: blur(11px) saturate(1.45);
+  opacity: calc(var(--cluster-base-opacity, 0.18) * var(--cluster-opacity));
+  transform: translate(-50%, -50%);
+}
+
+.cometStreakOne,
+.cometStreakTwo,
+.cometStreakThree {
+  position: absolute;
+  height: 1px;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.72),
+    rgba(var(--space-accent), 0.38),
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(var(--space-accent), 0.34);
+  opacity: 0.62;
+  transform-origin: center;
+}
+
+.cometStreakOne {
+  left: 8%;
+  top: 28%;
+  width: 220px;
+  transform: rotate(-18deg);
+}
+
+.cometStreakTwo {
+  right: 8%;
+  bottom: 26%;
+  width: 160px;
+  opacity: 0.38;
+  transform: rotate(-24deg);
+}
+
+.cometStreakThree {
+  left: 46%;
+  top: 16%;
+  width: 135px;
+  opacity: 0.34;
+  transform: rotate(17deg);
+}
+
+.distantGlowOne,
+.distantGlowTwo {
+  position: absolute;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.18),
+      rgba(var(--space-accent), 0.18) 18%,
+      rgba(var(--space-nebula-two), 0.08) 44%,
+      transparent 72%
+    );
+  filter: blur(14px) saturate(1.35);
+  mix-blend-mode: screen;
+}
+
+.distantGlowOne {
+  left: 12%;
+  bottom: 11%;
+  width: 340px;
+  height: 340px;
+  opacity: 0.38;
+}
+
+.distantGlowTwo {
+  right: 14%;
+  top: 16%;
+  width: 280px;
+  height: 280px;
+  opacity: 0.28;
+}
+
+.backgroundStarLayer {
+  z-index: 7;
+  overflow: hidden;
+}
+
+.backgroundStar {
+  position: absolute;
+  border-radius: 50%;
+  box-shadow:
+    0 0 var(--star-halo, 5px) currentColor,
+    0 0 calc(var(--star-halo, 5px) * 1.9) rgba(255, 255, 255, 0.26);
+  color: inherit;
+  transform: translate(-50%, -50%);
+  animation-name: background-star-twinkle;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+.galaxyBand {
+  z-index: 6;
+  inset: -42%;
+  opacity: var(--band-opacity);
+  background:
+    radial-gradient(
+      ellipse at 36% 54%,
+      rgba(255, 255, 255, 0.4),
+      rgba(255, 255, 255, 0.19) 18%,
+      rgba(var(--space-accent), 0.12) 35%,
+      transparent 62%
+    ),
+    radial-gradient(
+      ellipse at 56% 47%,
+      rgba(var(--space-nebula-three), 0.16),
+      rgba(var(--space-nebula-one), 0.08) 28%,
+      transparent 58%
+    ),
+    linear-gradient(
+      118deg,
+      transparent 4%,
+      rgba(255, 255, 255, 0.09) 19%,
+      rgba(255, 255, 255, 0.18) 36%,
+      rgba(255, 255, 255, 0.13) 48%,
+      rgba(var(--space-accent), 0.09) 63%,
+      transparent 88%
+    );
+  filter: blur(1.2px) saturate(1.6);
+  mix-blend-mode: screen;
+  transform-origin: center;
+  transform: rotate(var(--band-rotate)) scale(var(--band-scale));
+}
+
+.themeNeboDeep .galaxyBand {
+  inset: -58%;
+  background:
+    radial-gradient(
+      ellipse at 52% 50%,
+      rgba(255, 255, 255, 0.34),
+      rgba(255, 255, 255, 0.18) 16%,
+      rgba(var(--space-accent), 0.12) 36%,
+      transparent 65%
+    ),
+    linear-gradient(
+      92deg,
+      transparent 10%,
+      rgba(255, 255, 255, 0.16) 42%,
+      rgba(var(--space-accent), 0.1) 55%,
+      transparent 86%
+    );
+}
+
+.themeSolarBloom .galaxyBand {
+  background:
+    radial-gradient(
+      ellipse at 50% 66%,
+      rgba(255, 255, 255, 0.34),
+      rgba(255, 255, 255, 0.2) 17%,
+      rgba(var(--space-accent), 0.13) 36%,
+      transparent 66%
+    ),
+    conic-gradient(
+      from 246deg at 50% 65%,
+      transparent 0 16deg,
+      rgba(255, 255, 255, 0.18) 40deg,
+      rgba(var(--space-accent), 0.12) 70deg,
+      transparent 108deg 360deg
+    );
+}
+
+.themeGhostOcean .galaxyBand {
+  background:
+    radial-gradient(
+      ellipse at 52% 48%,
+      rgba(255, 255, 255, 0.3),
+      rgba(255, 255, 255, 0.16) 22%,
+      rgba(var(--space-accent), 0.09) 42%,
+      transparent 72%
+    );
+}
+
+.themeEmberVoid .galaxyBand {
+  background:
+    linear-gradient(
+      120deg,
+      transparent 5%,
+      rgba(255, 255, 255, 0.15) 27%,
+      rgba(var(--space-accent), 0.1) 41%,
+      transparent 58%
+    ),
+    linear-gradient(
+      58deg,
+      transparent 16%,
+      rgba(255, 255, 255, 0.13) 40%,
+      rgba(var(--space-nebula-two), 0.09) 55%,
+      transparent 76%
+    );
+}
+
+.nebulaLayer {
+  background:
+    radial-gradient(
+      circle at 18% 62%,
+      rgba(var(--space-nebula-two), 0.2),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 70% 68%,
+      rgba(var(--space-accent), 0.14),
+      transparent 38%
+    );
+  filter: blur(7px);
+}
+
+.orbitLayer {
+  z-index: 8;
+  background: radial-gradient(
+    circle at 50% 53%,
+    rgba(var(--space-accent), 0.1),
+    rgba(var(--space-nebula-one), 0.07) 32%,
+    transparent 50%
+  );
+}
+
+/* Top-left control cluster. Width is capped so it always stays clear of the
+   scene navigator that lives in the top-right corner. */
+.topPanel {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: min(640px, calc(100% - 300px));
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.topPanel > * {
+  pointer-events: auto;
+}
+
+.queryBar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+}
+
+.queryInput {
+  border: 1px solid rgba(var(--space-accent), 0.44);
+  border-radius: 12px;
+  background: rgba(var(--space-panel), 0.74);
+  color: rgba(234, 243, 255, 0.96);
+  padding: 12px 14px;
+  letter-spacing: 0.04em;
+  font-family: "IM Fell English", serif;
+}
+
+.queryInput:focus-visible {
+  outline: 2px solid rgba(var(--space-accent), 0.68);
+  outline-offset: 2px;
+}
+
+.searchButton,
+.secondaryButton {
+  border: 1px solid rgba(var(--space-accent), 0.5);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-family: "IM Fell English", serif;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.searchButton {
+  background: linear-gradient(
+    130deg,
+    rgba(var(--space-accent), 0.36),
+    rgba(var(--space-nebula-one), 0.72)
+  );
+  color: rgba(240, 247, 255, 0.97);
+}
+
+.searchButton:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.querySuggestions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.suggestionLabel {
+  padding-right: 4px;
+  color: rgba(201, 225, 255, 0.72);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.suggestionButton {
+  border: 1px solid rgba(var(--space-accent), 0.28);
+  border-radius: 999px;
+  background: rgba(var(--space-panel), 0.5);
+  color: rgba(211, 231, 253, 0.9);
+  padding: 7px 12px;
+  cursor: pointer;
+  font-family: "IM Fell English", serif;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.suggestionButton:hover {
+  border-color: rgba(var(--space-accent), 0.62);
+  background: rgba(var(--space-accent), 0.15);
+  color: rgba(239, 247, 255, 0.98);
+}
+
+.searchError {
+  color: rgba(255, 218, 188, 0.96);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+}
+
+.metaRow {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  z-index: 20;
+  max-width: min(52vw, 520px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+.metaItem {
+  border: 1px solid rgba(var(--space-accent), 0.32);
+  border-radius: 999px;
+  padding: 9px 15px;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  color: rgba(201, 225, 255, 0.9);
+  background: rgba(var(--space-panel), 0.68);
+  white-space: nowrap;
+}
+
+.topMatches {
+  position: absolute;
+  top: 150px;
+  left: 16px;
+  right: 16px;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.matchCard {
+  --match-core: 71, 127, 255;
+  --match-glow: 56, 72, 255;
+  --match-border: 120, 190, 255;
+  border: 1px solid rgba(var(--match-border), 0.64);
+  border-left: 4px solid rgba(var(--match-core), 0.9);
+  border-radius: 12px;
+  background: linear-gradient(
+    165deg,
+    rgba(var(--match-glow), 0.26),
+    rgba(var(--space-panel), 0.78) 42%,
+    rgba(8, 30, 57, 0.62)
+  );
+  color: rgba(219, 238, 255, 0.96);
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.matchCard:hover {
+  transform: translateY(-2px);
+  border-color: rgba(var(--match-border), 0.86);
+  box-shadow:
+    0 8px 16px rgba(3, 13, 28, 0.4),
+    0 0 22px rgba(var(--match-glow), 0.38);
+}
+
+.matchRank {
+  font-size: 0.58rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: rgba(var(--match-core), 0.95);
+}
+
+.matchName {
+  font-family: "IM Fell English", serif;
+  font-size: 0.84rem;
+  letter-spacing: 0.03em;
+  color: rgba(var(--match-core), 0.98);
+  text-shadow: 0 0 14px rgba(var(--match-glow), 0.38);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matchScore {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: rgba(var(--match-core), 0.98);
+}
+
+.starCanvas {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  margin-top: 132px;
+  margin-bottom: 64px;
+  touch-action: none;
+  will-change: transform;
+}
+
+/* Wraps the constellation (lines + stars). Fades out while a query is building
+   so the previous map never flashes before being replaced by the real one, and
+   fades the finished constellation back in once results arrive. */
+.mapContents {
+  position: absolute;
+  inset: 0;
+  transition: opacity 450ms ease;
+}
+
+.mapContentsBuilding {
+  opacity: 0;
+}
+
+.buildingLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 14;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  pointer-events: none;
+}
+
+.buildingStars {
+  position: relative;
+  width: 132px;
+  height: 132px;
+}
+
+.buildingStar {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.98),
+    rgba(var(--space-accent), 0.7) 55%,
+    transparent 78%
+  );
+  box-shadow: 0 0 14px rgba(var(--space-accent), 0.8);
+  transform: rotate(calc(var(--i) * 45deg)) translateY(-56px) scale(0.6);
+  animation: building-pulse 1.1s ease-in-out infinite;
+  animation-delay: calc(var(--i) * 0.12s);
+}
+
+.buildingText {
+  font-family: "IM Fell English", serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(214, 232, 255, 0.86);
+  text-shadow: 0 0 18px rgba(var(--space-accent), 0.5);
+}
+
+@keyframes building-pulse {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: rotate(calc(var(--i) * 45deg)) translateY(-56px) scale(0.55);
+  }
+
+  50% {
+    opacity: 1;
+    transform: rotate(calc(var(--i) * 45deg)) translateY(-56px) scale(1.25);
+  }
+}
+
+.constellationSvg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.constellationRay {
+  stroke: rgba(150, 195, 235, 0.35);
+  stroke-width: 0.08;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 2px rgba(110, 170, 230, 0.25));
+  animation: line-drift 10s ease-in-out infinite;
+}
+
+.orbitGuide {
+  fill: none;
+  stroke: rgba(var(--space-accent), 0.18);
+  stroke-width: 0.08;
+  stroke-dasharray: 0.3 1.8;
+  vector-effect: non-scaling-stroke;
+}
+
+.constellationSpineLine {
+  stroke: rgba(var(--space-accent), 0.55);
+  stroke-width: 0.14;
+  stroke-linecap: round;
+  stroke-dasharray: 0.6 1.4;
+  filter: drop-shadow(0 0 3px rgba(150, 205, 255, 0.35));
+  animation: line-drift 12s ease-in-out infinite;
+}
+
+.starNode {
+  --star-core: 71, 127, 255;
+  --star-glow: 56, 72, 255;
+  --star-color: rgb(71, 127, 255);
+  --star-glow-color: rgb(56, 72, 255);
+  --star-aura-color: rgba(56, 72, 255, 0.46);
+  --rankBoost: 1;
+  --auraAlpha: 0.18;
+  position: absolute;
+  z-index: 16;
+  transform: translate(-50%, -50%);
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  box-shadow: none;
+  /* The wrapper is purely visual; only the inner .starHit takes pointer input,
+     so overlapping glow boxes never steal each other's hover. */
+  pointer-events: none;
+  overflow: visible;
+  isolation: isolate;
+  animation-name: star-drift;
+  animation-duration: var(--shimmerDuration, 8s);
+  animation-delay: var(--shimmerDelay, 0s);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+  transition: transform 180ms ease;
+}
+
+.starHit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--hit-size, 20px);
+  height: var(--hit-size, 20px);
+  min-width: 15px;
+  min-height: 15px;
+  transform: translate(-50%, -50%);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 20;
+}
+
+.starNode:has(.starHit:hover) {
+  z-index: 24;
+}
+
+.starNode:has(.starHit:hover) .starCore {
+  transform: scale(1.55);
+}
+
+.starNodeSelected {
+  z-index: 18;
+}
+
+.starNodeSelected .starCore {
+  transform: scale(1.4);
+}
+
+.starCore {
+  position: absolute;
+  width: 26%;
+  height: 26%;
+  left: 37%;
+  top: 37%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, var(--brightness)) 0%,
+    rgba(var(--star-core), calc(var(--brightness) * 0.9)) 30%,
+    rgba(var(--star-glow), calc(var(--brightness) * 0.42)) 64%,
+    transparent 100%
+  );
+  filter: blur(calc(var(--blur) * 0.06));
+  box-shadow:
+    0 0 calc(var(--glow) * 2px)
+      rgba(var(--star-core), calc(var(--brightness) * 0.68)),
+    0 0 calc(var(--glow) * 5px)
+      rgba(var(--star-glow), calc(var(--brightness) * 0.36)),
+    0 0 calc(var(--glow) * 11px)
+      rgba(var(--star-glow), calc(var(--brightness) * 0.18));
+  transition: transform 180ms ease;
+}
+
+.starAura {
+  position: absolute;
+  width: var(--auraSize, 1280%);
+  height: var(--auraSize, 1280%);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, calc(var(--auraAlpha) * 0.2)) 0%,
+    rgba(var(--star-core), calc(var(--auraAlpha) * 0.58)) 10%,
+    rgba(var(--star-glow), calc(var(--auraAlpha) * 0.38)) 24%,
+    rgba(var(--star-glow), calc(var(--auraAlpha) * 0.17)) 45%,
+    rgba(var(--star-glow), calc(var(--auraAlpha) * 0.065)) 64%,
+    rgba(var(--star-glow), 0) 86%
+  );
+  filter: blur(4px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation-name: star-aura-pulse;
+  animation-duration: calc(var(--shimmerDuration, 8s) * 1.25);
+  animation-delay: var(--shimmerDelay, 0s);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+}
+
+.starColorWash {
+  position: absolute;
+  width: var(--colorWashSize, 840%);
+  height: var(--colorWashSize, 840%);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle,
+      var(--star-color) 0%,
+      var(--star-aura-color) 18%,
+      rgba(var(--star-glow), calc(var(--auraAlpha) * 0.35)) 42%,
+      rgba(var(--star-glow), 0) 76%
+    );
+  filter: blur(7px) saturate(1.55);
+  opacity: calc(0.34 + var(--auraAlpha) * 0.58);
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.starGlow {
+  position: absolute;
+  width: var(--glowSize, 1000%);
+  height: var(--glowSize, 1000%);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, calc(var(--brightness) * 0.2)) 0%,
+    rgba(var(--star-core), calc(var(--brightness) * 0.22)) 16%,
+    rgba(var(--star-glow), calc(var(--brightness) * 0.14)) 35%,
+    rgba(var(--star-glow), calc(var(--brightness) * 0.062)) 55%,
+    rgba(var(--star-glow), 0) 78%
+  );
+  filter: blur(1.8px);
+  opacity: calc(0.4 + var(--glow) * 0.1 + var(--auraAlpha) * 0.22);
+  -webkit-mask-image: radial-gradient(circle, #000 0 56%, transparent 78%);
+  mask-image: radial-gradient(circle, #000 0 56%, transparent 78%);
+  mix-blend-mode: screen;
+  animation-name: star-sparkle;
+  animation-duration: calc(var(--shimmerDuration, 8s) * 1.1);
+  animation-delay: var(--shimmerDelay, 0s);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+}
+
+.starSpark {
+  position: absolute;
+  width: var(--sparkSize, 300%);
+  height: var(--sparkSize, 300%);
+  left: 50%;
+  top: 50%;
+  background:
+    linear-gradient(
+      90deg,
+      transparent 14%,
+      rgba(255, 255, 255, 0) 43%,
+      rgba(var(--star-core), calc(var(--brightness) * 0.7)) 49%,
+      rgba(255, 255, 255, calc(var(--brightness) * 0.7)) 50%,
+      rgba(var(--star-core), calc(var(--brightness) * 0.7)) 51%,
+      rgba(255, 255, 255, 0) 57%,
+      transparent 86%
+    ),
+    linear-gradient(
+      0deg,
+      transparent 14%,
+      rgba(255, 255, 255, 0) 43%,
+      rgba(var(--star-core), calc(var(--brightness) * 0.54)) 49%,
+      rgba(255, 255, 255, calc(var(--brightness) * 0.58)) 50%,
+      rgba(var(--star-core), calc(var(--brightness) * 0.54)) 51%,
+      rgba(255, 255, 255, 0) 57%,
+      transparent 86%
+    );
+  opacity: calc(0.22 + var(--glow) * 0.08 + var(--auraAlpha) * 0.18);
+  transform: translate(-50%, -50%) rotate(45deg);
+  filter: blur(calc(var(--blur) * 0.08));
+  -webkit-mask-image: radial-gradient(circle, #000 0 42%, transparent 66%);
+  mask-image: radial-gradient(circle, #000 0 42%, transparent 66%);
+  mix-blend-mode: screen;
+  animation-name: star-sparkle;
+  animation-duration: calc(var(--shimmerDuration, 8s) * 0.9);
+  animation-delay: var(--shimmerDelay, 0s);
+  animation-timing-function: ease-in-out;
+  animation-fill-mode: both;
+  animation-iteration-count: infinite;
+}
+
+.detailPanel {
+  display: none;
+}
+
+.detailEyebrow,
+.detailName,
+.detailScore,
+.previewImage,
+.statusLine {
+  display: none;
+}
+
+.controls {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 14px;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.secondaryButton {
+  background: rgba(var(--space-panel), 0.7);
+  color: rgba(213, 231, 253, 0.95);
+  border-radius: 10px;
+  font-size: 0.72rem;
+}
+
+.secondaryButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+@keyframes star-drift {
+  0% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.04);
+  }
+
+  100% {
+    opacity: 0.88;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes star-sparkle {
+  0% {
+    opacity: 0.08;
+  }
+
+  50% {
+    opacity: 0.28;
+  }
+
+  100% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes star-aura-pulse {
+  0% {
+    opacity: 0.62;
+    transform: translate(-50%, -50%) scale(0.94);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+
+  100% {
+    opacity: 0.68;
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+}
+
+@keyframes background-star-twinkle {
+  0% {
+    transform: translate(-50%, -50%) scale(0.74);
+    opacity: calc(var(--base-opacity, 1) * 0.72);
+  }
+
+  43% {
+    transform: translate(-50%, -50%) scale(1.08);
+    opacity: calc(var(--base-opacity, 1) * 1.08);
+  }
+
+  100% {
+    transform: translate(-50%, -50%) scale(0.88);
+    opacity: calc(var(--base-opacity, 1) * 0.82);
+  }
+}
+
+@keyframes star-fade {
+  from {
+    opacity: 0.58;
+    transform: translate(-50%, -50%) scale(0.75);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.12);
+  }
+}
+
+@keyframes line-drift {
+  0% {
+    opacity: 0.18;
+  }
+
+  50% {
+    opacity: 0.32;
+  }
+
+  100% {
+    opacity: 0.2;
+  }
+}
+
+@media (max-width: 860px) {
+  .topPanel {
+    left: 10px;
+    right: 10px;
+    width: auto;
+  }
+
+  .queryBar {
+    grid-template-columns: 1fr;
+  }
+
+  .metaItem {
+    white-space: normal;
+  }
+
+  .metaRow {
+    left: 10px;
+    bottom: 230px;
+    max-width: calc(100% - 20px);
+  }
+
+  .starCanvas {
+    margin-top: 260px;
+  }
+
+  .detailPanel {
+    left: 10px;
+    right: 10px;
+    bottom: 90px;
+    max-width: none;
+  }
+
+  .controls {
+    justify-content: stretch;
+    flex-direction: column;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .settingsPanel {
+    right: 10px;
+    bottom: 174px;
+  }
+
+  .centerAnchor {
+    width: 180px;
+    height: 180px;
+  }
+
+  .mapHint {
+    bottom: 100px;
+    font-size: 0.55rem;
+  }
+}
+
+/* Hover preview - small and positioned above star */
+.starHoverPreview {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(var(--space-panel), 0.92);
+  border: 1px solid rgba(var(--space-accent), 0.4);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  width: 140px;
+  transform: translate(-50%, -120%);
+}
+
+@media (pointer: coarse) {
+  .starHoverPreview {
+    display: none;
+  }
+}
+
+.starHoverImage {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.starHoverLabel {
+  padding: 6px 8px;
+  background: rgba(5, 15, 30, 0.95);
+  border-top: 1px solid rgba(var(--space-accent), 0.2);
+}
+
+.starHoverName {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(230, 240, 255, 0.95);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.starHoverScore {
+  font-size: 0.65rem;
+  color: rgba(150, 190, 255, 0.8);
+  margin-top: 1px;
+}
+
+.focusPanel {
+  position: absolute;
+  left: 16px;
+  bottom: 76px;
+  z-index: 18;
+  max-width: min(320px, calc(100% - 32px));
+  display: grid;
+  gap: 4px;
+  border: 1px solid rgba(var(--space-accent), 0.32);
+  border-radius: 10px;
+  background: rgba(var(--space-panel), 0.78);
+  color: rgba(225, 240, 255, 0.96);
+  padding: 10px 12px;
+  box-shadow: 0 8px 18px rgba(3, 13, 28, 0.32);
+}
+
+.focusLabel,
+.focusScore {
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(170, 210, 252, 0.9);
+}
+
+.focusName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: "IM Fell English", serif;
+  font-size: 0.98rem;
+  letter-spacing: 0.03em;
+}
+
+/* Settings Panel */
+.settingsPanel {
+  position: absolute;
+  right: 16px;
+  bottom: 76px;
+  z-index: 30;
+}
+
+.settingsButton {
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(var(--space-accent), 0.4);
+  border-radius: 999px;
+  background: rgba(var(--space-panel), 0.7);
+  color: rgba(220, 235, 255, 0.9);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.settingsButton:hover {
+  background: rgba(var(--space-panel), 0.9);
+  border-color: rgba(var(--space-accent), 0.6);
+  transform: scale(1.1);
+}
+
+.settingsDropdown {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: rgba(var(--space-panel), 0.95);
+  border: 1px solid rgba(var(--space-accent), 0.3);
+  border-radius: 10px;
+  padding: 12px 14px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.settingGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.settingLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.settingLabel span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(210, 230, 255, 0.9);
+  letter-spacing: 0.05em;
+}
+
+.settingSlider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(var(--space-accent), 0.2);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.settingSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--space-accent), 1),
+    rgba(var(--space-nebula-two), 1)
+  );
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(var(--space-accent), 0.4);
+  transition: all 0.2s;
+}
+
+.settingSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(var(--space-accent), 0.6);
+}
+
+.settingSlider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(var(--space-accent), 1),
+    rgba(var(--space-nebula-two), 1)
+  );
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(var(--space-accent), 0.4);
+  transition: all 0.2s;
+}
+
+.settingSlider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(var(--space-accent), 0.6);
+}
+
+.structureSelect {
+  width: 100%;
+  border: 1px solid rgba(var(--space-accent), 0.36);
+  border-radius: 7px;
+  background: rgba(var(--space-panel), 0.94);
+  color: rgba(226, 240, 255, 0.96);
+  padding: 8px 9px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  outline: none;
+}
+
+.structureSelect:focus-visible {
+  border-color: rgba(var(--space-accent), 0.72);
+  box-shadow: 0 0 0 2px rgba(var(--space-accent), 0.24);
+}
+
+.capacityNote {
+  color: rgba(157, 194, 235, 0.72) !important;
+  font-size: 0.62rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+}
+
+.settingReset {
+  padding: 8px 12px;
+  background: rgba(var(--space-accent), 0.18);
+  border: 1px solid rgba(var(--space-accent), 0.38);
+  border-radius: 6px;
+  color: rgba(210, 230, 255, 0.9);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.settingReset:hover {
+  background: rgba(var(--space-accent), 0.3);
+  border-color: rgba(var(--space-accent), 0.62);
+}
+
+/* Meta label styling */
+.metaLabel {
+  font-weight: 600;
+  color: rgba(150, 190, 255, 0.9);
+}
+
+.metaValue {
+  color: rgba(220, 235, 255, 0.95);
+}
+
+.clipActive {
+  color: rgba(100, 200, 100, 0.95);
+}
+
+.clipInactive {
+  color: rgba(200, 150, 100, 0.95);
+}
+
+/* Match card active state */
+.matchCardActive {
+  border-color: rgba(var(--match-border), 0.92);
+  background: linear-gradient(
+    165deg,
+    rgba(var(--match-glow), 0.42),
+    rgba(12, 30, 56, 0.92) 46%,
+    rgba(8, 24, 44, 0.86)
+  );
+  box-shadow:
+    0 0 18px rgba(var(--match-glow), 0.5),
+    inset 0 0 16px rgba(var(--match-core), 0.2);
+}
+
+.centerAnchor {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 240px;
+  height: 240px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(170, 210, 255, 0.25),
+    rgba(30, 70, 130, 0.08) 55%,
+    transparent 70%
+  );
+  filter: blur(2px);
+  opacity: 0.6;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.mapHint {
+  position: absolute;
+  left: 50%;
+  bottom: 64px;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(160, 200, 235, 0.72);
+  background: rgba(6, 18, 35, 0.5);
+  border: 1px solid rgba(120, 170, 230, 0.25);
+  padding: 6px 12px;
+  border-radius: 999px;
+  pointer-events: none;
+}
+
+.centerWord {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 12;
+  isolation: isolate;
+  pointer-events: none;
+  font-family: "IM Fell English", serif;
+  font-size: 3.6rem;
+  font-weight: 300;
+  color: rgba(225, 240, 255, 0.78);
+  letter-spacing: 0.09em;
+  text-align: center;
+  text-transform: capitalize;
+  text-shadow:
+    0 0 40px rgba(8, 32, 64, 0.8),
+    0 0 90px rgba(20, 70, 130, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  word-wrap: break-word;
+  max-width: 80%;
+  line-height: 1.1;
+}
+
+.centerWord::before {
+  position: absolute;
+  inset: -32px -56px -36px -48px;
+  z-index: -1;
+  content: "";
+  border-radius: 49% 54% 44% 58% / 52% 43% 57% 48%;
+  background:
+    radial-gradient(
+      ellipse at 47% 53%,
+      rgba(var(--space-base), 0.62),
+      rgba(var(--space-base), 0.42) 43%,
+      rgba(var(--space-base), 0.16) 66%,
+      transparent 82%
+    );
+  filter: blur(14px);
+  transform: rotate(-4deg);
+}
+
+@media (max-width: 860px) {
+
+  .centerWord {
+    font-size: 2.4rem;
+  }
+}
+
+/* CLIP-unavailable blocker — covers the whole atlas so it can't be used
+   without the CLIP backend. */
+.clipBlocker {
+  position: absolute;
+  inset: 0;
+  z-index: 140;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: radial-gradient(
+      ellipse at 50% 40%,
+      rgba(6, 16, 34, 0.72),
+      rgba(2, 6, 16, 0.92) 70%
+    );
+  backdrop-filter: blur(6px);
+}
+
+.clipBlockerCard {
+  max-width: min(420px, calc(100% - 32px));
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  text-align: center;
+  padding: 26px 28px;
+  border: 1px solid rgba(var(--space-accent), 0.34);
+  border-radius: 16px;
+  background: rgba(var(--space-panel), 0.92);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+.clipBlockerBadge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 150, 120, 0.5);
+  background: rgba(255, 110, 80, 0.14);
+  color: rgba(255, 190, 168, 0.96);
+  font-size: 0.62rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.clipBlockerTitle {
+  margin: 0;
+  font-family: "IM Fell English", serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+  color: rgba(233, 244, 255, 0.98);
+  letter-spacing: 0.03em;
+}
+
+.clipBlockerText {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: rgba(196, 219, 246, 0.86);
+}
+
+.clipBlockerButton {
+  margin-top: 4px;
+  padding: 10px 18px;
+  border: 1px solid rgba(var(--space-accent), 0.5);
+  border-radius: 10px;
+  background: linear-gradient(
+    130deg,
+    rgba(var(--space-accent), 0.34),
+    rgba(var(--space-nebula-one), 0.7)
+  );
+  color: rgba(240, 247, 255, 0.97);
+  font-family: "IM Fell English", serif;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.clipBlockerButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 22px rgba(var(--space-accent), 0.4);
+}

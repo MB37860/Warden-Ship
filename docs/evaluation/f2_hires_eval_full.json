@@ -1,0 +1,311 @@
+{
+  "tag": "hires-full",
+  "model": "data/f2_dataset_hires/f2_image_model.pt",
+  "img_size": 336,
+  "evaluated": 12680,
+  "available": 12680,
+  "sample": null,
+  "seed": 42,
+  "elapsed_s": 25841.9,
+  "heads": {
+    "style": {
+      "acc": 0.7699151665632112,
+      "ci95": [
+        0.7614182188396628,
+        0.7781976524275562
+      ],
+      "n": 9666
+    },
+    "genre": {
+      "acc": 0.862680492295765,
+      "ci95": [
+        0.8559044645826066,
+        0.8691865801157834
+      ],
+      "n": 10319
+    },
+    "artist": {
+      "acc": 0.9727011494252874,
+      "ci95": [
+        0.9627530724397325,
+        0.9800473140797695
+      ],
+      "n": 1392
+    }
+  },
+  "artist_per_class": {
+    "Giovanni Battista Piranesi": {
+      "acc": 1.0,
+      "n": 107
+    },
+    "Theophile Steinlen": {
+      "acc": 1.0,
+      "n": 84
+    },
+    "Alfred Freddy Krupa": {
+      "acc": 0.975,
+      "n": 80
+    },
+    "Camille Pissarro": {
+      "acc": 0.9054054054054054,
+      "n": 74
+    },
+    "Zdzislaw Beksinski": {
+      "acc": 1.0,
+      "n": 71
+    },
+    "Pyotr Konchalovsky": {
+      "acc": 0.9552238805970149,
+      "n": 67
+    },
+    "Henri Matisse": {
+      "acc": 0.9850746268656716,
+      "n": 67
+    },
+    "Bela Czobel": {
+      "acc": 0.9848484848484849,
+      "n": 66
+    },
+    "Gustave Dor\u00e9": {
+      "acc": 1.0,
+      "n": 62
+    },
+    "John Singer Sargent": {
+      "acc": 0.9836065573770492,
+      "n": 61
+    },
+    "Hryhorii Havrylenko": {
+      "acc": 0.9836065573770492,
+      "n": 61
+    },
+    "Ivan Aivazovsky": {
+      "acc": 0.9615384615384616,
+      "n": 52
+    },
+    "Scheiber Hug\u00f3": {
+      "acc": 0.9615384615384616,
+      "n": 52
+    },
+    "Boris Kustodiev": {
+      "acc": 0.9215686274509803,
+      "n": 51
+    },
+    "Peter Paul Rubens": {
+      "acc": 0.9803921568627451,
+      "n": 51
+    },
+    "Childe Hassam": {
+      "acc": 0.9787234042553191,
+      "n": 47
+    },
+    "Martiros Sarian": {
+      "acc": 0.9555555555555556,
+      "n": 45
+    },
+    "Camille Corot": {
+      "acc": 0.9772727272727273,
+      "n": 44
+    },
+    "Paul Cezanne": {
+      "acc": 0.9090909090909091,
+      "n": 44
+    },
+    "Roger Weik": {
+      "acc": 1.0,
+      "n": 40
+    },
+    "Iv\u00e1n Shishkin": {
+      "acc": 0.972972972972973,
+      "n": 37
+    },
+    "Eugene Boudin": {
+      "acc": 0.9411764705882353,
+      "n": 34
+    },
+    "Paul Gauguin": {
+      "acc": 0.9375,
+      "n": 32
+    },
+    "Raphael Kirchner": {
+      "acc": 1.0,
+      "n": 32
+    },
+    "Ilya Repin": {
+      "acc": 1.0,
+      "n": 31
+    }
+  },
+  "artist_confusion": [
+    {
+      "true": "Boris Kustodiev",
+      "pred": "Ilya Repin",
+      "count": 3
+    },
+    {
+      "true": "Camille Pissarro",
+      "pred": "John Singer Sargent",
+      "count": 2
+    },
+    {
+      "true": "Camille Pissarro",
+      "pred": "Paul Gauguin",
+      "count": 2
+    },
+    {
+      "true": "Hryhorii Havrylenko",
+      "pred": "Camille Pissarro",
+      "count": 1
+    },
+    {
+      "true": "Pyotr Konchalovsky",
+      "pred": "Eugene Boudin",
+      "count": 1
+    },
+    {
+      "true": "Paul Gauguin",
+      "pred": "Eugene Boudin",
+      "count": 1
+    },
+    {
+      "true": "Peter Paul Rubens",
+      "pred": "Camille Corot",
+      "count": 1
+    },
+    {
+      "true": "Ivan Aivazovsky",
+      "pred": "Martiros Sarian",
+      "count": 1
+    },
+    {
+      "true": "Scheiber Hug\u00f3",
+      "pred": "Roger Weik",
+      "count": 1
+    },
+    {
+      "true": "Henri Matisse",
+      "pred": "Camille Corot",
+      "count": 1
+    },
+    {
+      "true": "Boris Kustodiev",
+      "pred": "Alfred Freddy Krupa",
+      "count": 1
+    },
+    {
+      "true": "Alfred Freddy Krupa",
+      "pred": "Boris Kustodiev",
+      "count": 1
+    },
+    {
+      "true": "Iv\u00e1n Shishkin",
+      "pred": "Alfred Freddy Krupa",
+      "count": 1
+    },
+    {
+      "true": "Scheiber Hug\u00f3",
+      "pred": "Pyotr Konchalovsky",
+      "count": 1
+    },
+    {
+      "true": "Paul Cezanne",
+      "pred": "Henri Matisse",
+      "count": 1
+    },
+    {
+      "true": "Eugene Boudin",
+      "pred": "Paul Gauguin",
+      "count": 1
+    },
+    {
+      "true": "Bela Czobel",
+      "pred": "Henri Matisse",
+      "count": 1
+    },
+    {
+      "true": "Camille Pissarro",
+      "pred": "Boris Kustodiev",
+      "count": 1
+    },
+    {
+      "true": "Paul Cezanne",
+      "pred": "Paul Gauguin",
+      "count": 1
+    },
+    {
+      "true": "Paul Cezanne",
+      "pred": "John Singer Sargent",
+      "count": 1
+    },
+    {
+      "true": "Camille Pissarro",
+      "pred": "Henri Matisse",
+      "count": 1
+    },
+    {
+      "true": "Paul Cezanne",
+      "pred": "Camille Pissarro",
+      "count": 1
+    },
+    {
+      "true": "Alfred Freddy Krupa",
+      "pred": "Zdzislaw Beksinski",
+      "count": 1
+    },
+    {
+      "true": "Ivan Aivazovsky",
+      "pred": "Iv\u00e1n Shishkin",
+      "count": 1
+    },
+    {
+      "true": "Pyotr Konchalovsky",
+      "pred": "Paul Cezanne",
+      "count": 1
+    },
+    {
+      "true": "John Singer Sargent",
+      "pred": "Theophile Steinlen",
+      "count": 1
+    },
+    {
+      "true": "Camille Pissarro",
+      "pred": "Eugene Boudin",
+      "count": 1
+    },
+    {
+      "true": "Childe Hassam",
+      "pred": "John Singer Sargent",
+      "count": 1
+    },
+    {
+      "true": "Paul Gauguin",
+      "pred": "John Singer Sargent",
+      "count": 1
+    },
+    {
+      "true": "Martiros Sarian",
+      "pred": "Bela Czobel",
+      "count": 1
+    },
+    {
+      "true": "Camille Corot",
+      "pred": "Iv\u00e1n Shishkin",
+      "count": 1
+    },
+    {
+      "true": "Pyotr Konchalovsky",
+      "pred": "Henri Matisse",
+      "count": 1
+    },
+    {
+      "true": "Eugene Boudin",
+      "pred": "Camille Corot",
+      "count": 1
+    },
+    {
+      "true": "Martiros Sarian",
+      "pred": "Camille Pissarro",
+      "count": 1
+    }
+  ],
+  "mean_acc": 0.8684322694280878
+}

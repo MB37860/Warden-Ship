@@ -1,0 +1,60 @@
+.root {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(231, 190, 111, 0.14), transparent 28%),
+    #080503;
+  color: rgba(245, 230, 200, 0.82);
+  z-index: 20;
+}
+
+/* Translucent variant for loaders drawn on top of a live scene. */
+.overlay {
+  background: rgba(8, 5, 3, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(231, 190, 111, 0.22);
+  border-top-color: rgba(231, 190, 111, 0.9);
+  animation: scene-loader-spin 0.9s linear infinite;
+}
+
+.message {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.82rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(231, 205, 160, 0.8);
+  animation: scene-loader-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes scene-loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scene-loader-pulse {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner,
+  .message {
+    animation: none;
+  }
+}

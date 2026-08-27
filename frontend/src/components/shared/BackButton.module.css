@@ -1,0 +1,49 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
+  -webkit-app-region: no-drag;
+}
+
+.button:hover {
+  transform: translateX(-1px);
+}
+
+.button:active {
+  transform: translateX(-1px) scale(0.98);
+}
+
+.icon {
+  flex: none;
+}
+
+/* Solid: warm parchment chip, the default chrome control. */
+.solid {
+  color: rgba(245, 230, 200, 0.92);
+  background: rgba(28, 18, 9, 0.72);
+  border: 1px solid rgba(231, 190, 111, 0.35);
+}
+
+.solid:hover {
+  background: rgba(46, 30, 14, 0.82);
+  border-color: rgba(231, 190, 111, 0.6);
+}
+
+/* Ghost: for use over busy/3D backgrounds where a solid chip is too heavy. */
+.ghost {
+  color: rgba(245, 230, 200, 0.85);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.ghost:hover {
+  color: rgba(255, 244, 222, 1);
+  background: rgba(28, 18, 9, 0.5);
+}

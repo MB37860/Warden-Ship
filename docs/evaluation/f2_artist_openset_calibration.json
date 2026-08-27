@@ -1,0 +1,116 @@
+{
+  "description": "Open-set 'unknown artist' threshold calibration for the F2 artist head. Positives: 300 held-out test paintings by the 25 trained artists. Negatives: 300 held-out test paintings by artists outside the top-25 (rows without an artist label). Metric: max softmax probability; thresholds chosen by max balanced accuracy.",
+  "hires_vitl_336": {
+    "model": "data/f2_dataset_hires/f2_image_model.pt",
+    "size": 336,
+    "n_known": 300,
+    "n_unknown": 300,
+    "known_maxprob": {
+      "mean": 0.816481633062164,
+      "p10": 0.6087511658668519,
+      "p50": 0.8816747069358826
+    },
+    "unknown_maxprob": {
+      "mean": 0.176404631746312,
+      "p50": 0.10775705799460411,
+      "p90": 0.37940988838672657
+    },
+    "best": {
+      "threshold": 0.49000000000000005,
+      "balanced_acc": 0.9299999999999999,
+      "known_kept": 0.9266666666666666,
+      "unknown_rejected": 0.9333333333333333
+    },
+    "sweep": {
+      "0.30": {
+        "known_kept": 0.9466666666666667,
+        "unknown_rejected": 0.85
+      },
+      "0.40": {
+        "known_kept": 0.93,
+        "unknown_rejected": 0.9066666666666666
+      },
+      "0.50": {
+        "known_kept": 0.92,
+        "unknown_rejected": 0.9333333333333333
+      },
+      "0.60": {
+        "known_kept": 0.9,
+        "unknown_rejected": 0.9433333333333334
+      },
+      "0.70": {
+        "known_kept": 0.8833333333333333,
+        "unknown_rejected": 0.9633333333333334
+      },
+      "0.80": {
+        "known_kept": 0.8033333333333333,
+        "unknown_rejected": 0.98
+      }
+    }
+  },
+  "baseline_vitb_224": {
+    "model": "data/f2_dataset/f2_image_model.pt",
+    "size": 224,
+    "n_known": 300,
+    "n_unknown": 300,
+    "known_maxprob": {
+      "mean": 0.9578493694464366,
+      "p10": 0.8732138454914093,
+      "p50": 0.9998992085456848
+    },
+    "unknown_maxprob": {
+      "mean": 0.7506366023421287,
+      "p50": 0.8070803284645081,
+      "p90": 0.9959681153297425
+    },
+    "best": {
+      "threshold": 0.9500000000000002,
+      "balanced_acc": 0.7833333333333333,
+      "known_kept": 0.86,
+      "unknown_rejected": 0.7066666666666667
+    },
+    "sweep": {
+      "0.30": {
+        "known_kept": 0.9933333333333333,
+        "unknown_rejected": 0.01
+      },
+      "0.40": {
+        "known_kept": 0.9933333333333333,
+        "unknown_rejected": 0.09333333333333334
+      },
+      "0.50": {
+        "known_kept": 0.98,
+        "unknown_rejected": 0.19666666666666666
+      },
+      "0.60": {
+        "known_kept": 0.95,
+        "unknown_rejected": 0.29333333333333333
+      },
+      "0.70": {
+        "known_kept": 0.94,
+        "unknown_rejected": 0.3933333333333333
+      },
+      "0.80": {
+        "known_kept": 0.9266666666666666,
+        "unknown_rejected": 0.49666666666666665
+      }
+    }
+  },
+  "clip_zero_shot_fallback": {
+    "model": "/home/matej/FAKS/3.letnik/OO/projekt1/data/clip_art",
+    "n": 300,
+    "known_maxprob_p50": 0.15227806568145752,
+    "unknown_maxprob_p50": 0.10074971616268158,
+    "best": {
+      "threshold": 0.13,
+      "balanced_acc": 0.7616666666666667,
+      "known_kept": 0.6733333333333333,
+      "unknown_rejected": 0.85
+    }
+  },
+  "chosen_defaults": {
+    "F2_ARTIST_UNKNOWN_THRESHOLD (image model, ViT-L/336 default)": 0.49,
+    "F2_ARTIST_UNKNOWN_THRESHOLD with ViT-B/224 baseline": 0.95,
+    "F2_ARTIST_UNKNOWN_THRESHOLD_ZS (CLIP zero-shot fallback)": 0.13
+  }
+}

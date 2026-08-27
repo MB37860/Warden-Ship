@@ -1,0 +1,138 @@
+{
+  "tag": "clip-zeroshot-vitb32",
+  "model": "openai/clip-vit-base-patch32",
+  "evaluated": 12680,
+  "available": 12680,
+  "sample": null,
+  "seed": 42,
+  "elapsed_s": 961.5,
+  "heads": {
+    "style": {
+      "acc": 0.25812124974136147,
+      "ci95": [
+        0.24949463934050253,
+        0.2669400455875318
+      ],
+      "n": 9666
+    },
+    "genre": {
+      "acc": 0.5768969861420681,
+      "ci95": [
+        0.5673375421488551,
+        0.5863991963863948
+      ],
+      "n": 10319
+    },
+    "artist": {
+      "acc": 0.5603448275862069,
+      "ci95": [
+        0.5341393696401634,
+        0.5862181265112624
+      ],
+      "n": 1392
+    }
+  },
+  "artist_per_class": {
+    "Giovanni Battista Piranesi": {
+      "acc": 0.7570093457943925,
+      "n": 107
+    },
+    "Theophile Steinlen": {
+      "acc": 0.7380952380952381,
+      "n": 84
+    },
+    "Alfred Freddy Krupa": {
+      "acc": 0.0,
+      "n": 80
+    },
+    "Camille Pissarro": {
+      "acc": 0.6081081081081081,
+      "n": 74
+    },
+    "Zdzislaw Beksinski": {
+      "acc": 0.9014084507042254,
+      "n": 71
+    },
+    "Pyotr Konchalovsky": {
+      "acc": 0.43283582089552236,
+      "n": 67
+    },
+    "Henri Matisse": {
+      "acc": 0.5671641791044776,
+      "n": 67
+    },
+    "Bela Czobel": {
+      "acc": 0.06060606060606061,
+      "n": 66
+    },
+    "Gustave Dor\u00e9": {
+      "acc": 0.967741935483871,
+      "n": 62
+    },
+    "John Singer Sargent": {
+      "acc": 0.7377049180327869,
+      "n": 61
+    },
+    "Hryhorii Havrylenko": {
+      "acc": 0.0,
+      "n": 61
+    },
+    "Ivan Aivazovsky": {
+      "acc": 0.8846153846153846,
+      "n": 52
+    },
+    "Scheiber Hug\u00f3": {
+      "acc": 0.2692307692307692,
+      "n": 52
+    },
+    "Boris Kustodiev": {
+      "acc": 0.1568627450980392,
+      "n": 51
+    },
+    "Peter Paul Rubens": {
+      "acc": 0.8235294117647058,
+      "n": 51
+    },
+    "Childe Hassam": {
+      "acc": 0.574468085106383,
+      "n": 47
+    },
+    "Martiros Sarian": {
+      "acc": 0.4222222222222222,
+      "n": 45
+    },
+    "Camille Corot": {
+      "acc": 0.6136363636363636,
+      "n": 44
+    },
+    "Paul Cezanne": {
+      "acc": 0.5909090909090909,
+      "n": 44
+    },
+    "Roger Weik": {
+      "acc": 0.8,
+      "n": 40
+    },
+    "Iv\u00e1n Shishkin": {
+      "acc": 0.7567567567567568,
+      "n": 37
+    },
+    "Eugene Boudin": {
+      "acc": 0.8529411764705882,
+      "n": 34
+    },
+    "Paul Gauguin": {
+      "acc": 0.71875,
+      "n": 32
+    },
+    "Raphael Kirchner": {
+      "acc": 0.78125,
+      "n": 32
+    },
+    "Ilya Repin": {
+      "acc": 0.1935483870967742,
+      "n": 31
+    }
+  },
+  "mean_acc": 0.46512102115654547
+}

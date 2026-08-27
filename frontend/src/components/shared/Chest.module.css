@@ -1,0 +1,264 @@
+.sceneWrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.chestFallback {
+  position: absolute;
+  inset: 0;
+}
+
+.chestFallbackBadge {
+  position: absolute;
+  right: 12px;
+  top: 52px;
+  z-index: 70;
+  border-radius: 999px;
+  border: 1px solid rgba(228, 191, 122, 0.5);
+  background: rgba(17, 10, 6, 0.72);
+  color: rgba(244, 213, 149, 0.95);
+  font-family: "IM Fell English", serif;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 8px 11px;
+}
+
+.chestFallbackRoom {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(255, 175, 72, 0.22),
+      transparent 28%
+    ),
+    linear-gradient(180deg, #4a3119 0%, #2d1d10 60%, #160e08 100%);
+}
+
+.chestFallbackChest {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: min(42vw, 430px);
+  height: min(24vw, 250px);
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.chestFallbackLid {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 10%;
+  height: 38%;
+  background: linear-gradient(170deg, #8d5a37, #5a361e);
+  border-radius: 12px;
+}
+
+.chestFallbackBody {
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  bottom: 6%;
+  height: 58%;
+  background: linear-gradient(170deg, #7b4e2e, #3e2516);
+  border-radius: 14px;
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.48);
+}
+
+.chestFallbackCannons {
+  position: absolute;
+  right: 9%;
+  top: 39%;
+  width: min(26vw, 270px);
+  height: min(18vw, 180px);
+  border-radius: 14px;
+  border: 1px solid rgba(229, 186, 117, 0.44);
+  background:
+    radial-gradient(
+      circle at 14% 50%,
+      rgba(45, 48, 55, 0.96) 0 13%,
+      transparent 14%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(45, 48, 55, 0.96) 0 13%,
+      transparent 14%
+    ),
+    radial-gradient(
+      circle at 86% 50%,
+      rgba(45, 48, 55, 0.96) 0 13%,
+      transparent 14%
+    ),
+    linear-gradient(160deg, rgba(72, 45, 27, 0.9), rgba(30, 19, 12, 0.92));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 10px 10px 12px;
+}
+
+.fallbackCannonsRow {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.fallbackCannon {
+  position: relative;
+  width: 52px;
+  height: 38px;
+  border-radius: 8px;
+  background: linear-gradient(160deg, #6d4425, #3b2415);
+}
+
+.fallbackCannonBarrel {
+  position: absolute;
+  left: 18px;
+  top: -12px;
+  width: 16px;
+  height: 34px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #474e59, #22262c);
+}
+
+.fallbackCannonWheelLeft,
+.fallbackCannonWheelRight {
+  position: absolute;
+  bottom: -10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: #5a381f;
+  border: 1px solid rgba(168, 122, 71, 0.45);
+}
+
+.fallbackCannonWheelLeft {
+  left: 8px;
+}
+
+.fallbackCannonWheelRight {
+  right: 8px;
+}
+
+.fallbackFireButton {
+  border-radius: 999px;
+  border: 1px solid rgba(232, 195, 131, 0.58);
+  background: linear-gradient(
+    140deg,
+    rgba(106, 67, 29, 0.94),
+    rgba(76, 43, 17, 0.94)
+  );
+  color: rgba(249, 225, 175, 0.96);
+  font-family: "IM Fell English", serif;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-size: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+}
+
+.cannonButton {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 70;
+  width: 108px;
+  height: 72px;
+  padding: 4px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 150ms cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+.cannonButton:active {
+  transform: translateX(-3px);
+}
+
+.cannonIcon {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55));
+  transition: filter 200ms ease;
+}
+
+.cannonButtonAimed .cannonIcon {
+  filter:
+    drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 10px rgba(255, 170, 80, 0.45));
+}
+
+.cannonButton:hover .cannonIcon,
+.cannonButton:focus-visible .cannonIcon {
+  filter:
+    drop-shadow(0 6px 14px rgba(0, 0, 0, 0.55))
+    drop-shadow(0 0 16px rgba(255, 185, 100, 0.75))
+    brightness(1.12)
+    saturate(1.15);
+}
+
+/* Positioned over the muzzle opening in the artwork (top-right of frame) */
+.cannonMuzzleGlow {
+  position: absolute;
+  left: 78%;
+  top: 30%;
+  width: 34%;
+  height: 34%;
+  transform: translate(-50%, -50%);
+  border-radius: 999px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 189, 110, 0.95) 0%,
+    rgba(255, 145, 60, 0.5) 45%,
+    rgba(255, 145, 60, 0) 72%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.cannonButtonAimed .cannonMuzzleGlow {
+  opacity: 0.5;
+  animation: cannonReadyPulse 2.2s ease-in-out infinite;
+}
+
+.cannonButton:hover .cannonMuzzleGlow,
+.cannonButton:focus-visible .cannonMuzzleGlow {
+  opacity: 1;
+}
+
+@keyframes cannonReadyPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cannonButtonAimed .cannonMuzzleGlow {
+    animation: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .cannonButton {
+    left: 10px;
+    top: 10px;
+    width: 90px;
+    height: 60px;
+  }
+}

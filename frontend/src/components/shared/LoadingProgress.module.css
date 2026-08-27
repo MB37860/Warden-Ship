@@ -1,0 +1,96 @@
+.container {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 24px;
+  pointer-events: none;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+
+.content {
+  position: relative;
+  background: linear-gradient(135deg, #0f0f2e 0%, #1a1a3f 100%);
+  border: 1px solid rgba(100, 150, 255, 0.2);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  width: 100%;
+  max-width: 400px;
+  padding: 24px;
+  pointer-events: auto;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fff;
+  font-weight: 700;
+}
+
+.fileName {
+  margin: 8px 0 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  word-break: break-all;
+}
+
+.body {
+  margin-bottom: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.percent {
+  font-weight: 600;
+  color: #6496ff;
+}
+
+.progressBar {
+  height: 8px;
+  background: rgba(100, 150, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(100, 150, 255, 0.2);
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #6496ff 0%, #4a78e0 50%, #3a68d0 100%);
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(100, 150, 255, 0.5);
+}
+
+.note {
+  padding-top: 16px;
+  border-top: 1px solid rgba(100, 150, 255, 0.1);
+}
+
+.noteText {
+  margin: 0;
+  font-size: 0.75rem;
+  color: rgba(100, 150, 255, 0.7);
+  line-height: 1.4;
+}

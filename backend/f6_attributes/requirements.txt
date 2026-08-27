@@ -1,0 +1,34 @@
+# Core CV libraries (always required)
+#
+# Keep this stack pinned together. MediaPipe 0.10.21 is the last release line
+# we found that imports reliably here, and it pairs with TensorFlow 2.16 plus
+# NumPy 1.26. Newer releases drift into an incompatible NumPy 2.x set.
+opencv-python==4.11.0.86
+opencv-contrib-python==4.11.0.86
+numpy==1.26.4
+tqdm>=4.65.0
+protobuf==4.25.9
+setuptools<82
+
+# Emotion detection
+# RetinaFace powers the portrait-pose channel. It used to arrive as a
+# deepface dependency; deepface itself is gone, so declare it directly.
+retina-face==0.0.17
+tensorflow==2.16.1
+tf-keras==2.16.0
+
+
+# Pose estimation & head pose
+mediapipe==0.10.21
+
+# Clustering & projection
+scikit-learn==1.8.0
+# Optional: better UMAP projection (falls back to PCA if not installed)
+# umap-learn>=0.5.3
+
+# Head-pose DNN backend (optional, set HEAD_POSE_BACKEND=dnn)
+# onnxruntime>=1.16.0
+
+# Web serving (not included here — use FastAPI/Flask in your backend)
+# fastapi>=0.104.0
+# uvicorn>=0.24.0

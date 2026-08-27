@@ -1,0 +1,37 @@
+flask
+flask-cors
+flask-limiter
+pymongo
+torch
+python-dotenv
+transformers
+pillow
+
+# F5 historical map reads artwork dates from data/WikiArt_dataset/WikiArt.parquet.
+# Without a parquet engine pandas cannot open it, the WikiArt lookup comes back
+# empty, and EVERY artwork falls through to a fabricated "estimated" year.
+pandas
+pyarrow
+
+# Feature 6 attribute filtering
+#
+# These versions intentionally sit on the TensorFlow 2.16 / MediaPipe 0.10.21
+# line. Newer MediaPipe pulls in a NumPy 2.x stack that breaks the legacy CV
+# wheels used elsewhere in the project, while newer tf-keras upgrades TensorFlow
+# back to 2.21 and reintroduces the same conflict.
+numpy==1.26.4
+opencv-python==4.11.0.86
+opencv-contrib-python==4.11.0.86
+tqdm
+scikit-learn==1.8.0
+protobuf==4.25.9
+setuptools<82
+
+# Model-backed F6 extractors. The pipeline has portable fallbacks when these are
+# unavailable, but production installs should include them for full CV fidelity.
+# RetinaFace powers the portrait-pose channel. It used to arrive as a
+# deepface dependency; deepface itself is gone, so declare it directly.
+retina-face==0.0.17
+mediapipe==0.10.21
+tensorflow==2.16.1
+tf-keras==2.16.0

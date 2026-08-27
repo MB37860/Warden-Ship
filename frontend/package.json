@@ -1,0 +1,101 @@
+{
+  "name": "warden-ship",
+  "private": true,
+  "version": "0.1.8",
+  "description": "Warden Ship — an interactive 3D explorer for digitised art collections, with a local machine-learning backend.",
+  "author": "Matej Breskvar",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "electron": "electron .",
+    "electron:dev": "concurrently -k -n vite,electron \"vite\" \"wait-on tcp:127.0.0.1:5173 && electron .\"",
+    "build:runtime": "node scripts/build-python-runtime.mjs",
+    "build:mongo": "node scripts/fetch-mongo.mjs",
+    "electron:build": "vite build && npm run build:runtime && npm run build:mongo && electron-builder"
+  },
+  "dependencies": {
+    "@react-spring/three": "^10.0.3",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@react-three/postprocessing": "^3.0.4",
+    "@tailwindcss/vite": "^4.3.0",
+    "@use-gesture/react": "^10.3.1",
+    "framer-motion": "^12.38.0",
+    "jszip": "^3.10.1",
+    "postprocessing": "^6.39.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "tailwindcss": "^4.3.0",
+    "three": "^0.183.2",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "wait-on": "^8.0.1",
+    "@eslint/js": "^9.39.4",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "jsdom": "^27.0.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.0",
+    "vite": "^8.0.4",
+    "vitest": "^3.2.4"
+  },
+  "build": {
+    "appId": "si.uni-lj.fri.wardenship",
+    "productName": "Warden Ship",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "extraResources": [
+      {
+        "from": "runtime/python",
+        "to": "python"
+      },
+      {
+        "from": "runtime/backend",
+        "to": "backend"
+      },
+      {
+        "from": "runtime/mongo",
+        "to": "mongo"
+      }
+    ],
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Graphics"
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.graphics-design"
+    },
+    "win": {
+      "target": [
+        "zip"
+      ]
+    }
+  }
+}

@@ -1,0 +1,6 @@
+# Local prep + eval (this PC) — already satisfied by the repo .venv:
+#   Pillow, numpy, torch   (timm NOT needed locally; exported model is self-contained)
+#
+# Cluster training is installed INSIDE the NVIDIA PyTorch container by the
+# sbatch script (torch/torchvision ship with the container):
+timm==1.0.11
