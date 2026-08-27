@@ -281,6 +281,26 @@ function normalizeSimilarity(similarity) {
   return Math.max(0, Math.min(1, similarity));
 }
 
+// When to warn that the archive holds nothing like the query.
+//
+// Measured over the 100-image WikiArt sample with both CLIP weights the app can
+// load: on-target queries ("a stormy sea at night", "horses in a field") top out
+// at a cosine of 0.234-0.351, while queries for things a painting collection
+// cannot contain ("a modern smartphone on a desk", keyboard mash) still reach
+// 0.185-0.260. The two bands OVERLAP, so no threshold can prove the archive has
+// no match - CLIP scores every painting as somewhat similar to every phrase.
+//
+// So this sits below the weakest on-target query measured: it never interrupts a
+// search that did find something, and only speaks up when the whole sky comes
+// back flat. Queries that miss but score above it stay silent, which is the safe
+// direction to be wrong in. Raw cosine, because that is what the backend sends;
+// `normalizeSimilarity` maps it into the 0-1 range the stars are scored on.
+const WEAK_MATCH_SIMILARITY = 0.22;
+const WEAK_MATCH_SCORE = (WEAK_MATCH_SIMILARITY + 1) / 2;
+
+const WEAK_MATCH_NOTICE =
+  "Nothing in this archive answers to that. The nearest works are charted below, but the likeness is faint - try wording closer to what a painting can show.";
+
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 function buildStarLayout(
@@ -482,6 +502,9 @@ function StarView({
   // Nothing is drawn until a map has actually been built, so the scene never
   // shows a sky the user did not ask for.
   const [hasBuilt, setHasBuilt] = useState(false);
+  // True only when the stars are ranked by CLIP. The lexical fallback scores on
+  // a different scale, so WEAK_MATCH_SCORE would be meaningless against it.
+  const [clipRanked, setClipRanked] = useState(false);
   // The map fills the window, so how much room a star really has depends on the
   // window's shape. Spacing and capacity are both computed from it.
   const [aspect, setAspect] = useState(() =>
@@ -540,6 +563,7 @@ function StarView({
         setRankedImages([]);
         setHasBuilt(false);
         setSearchError("");
+        setClipRanked(false);
         setIsSearching(false);
         return;
       }
@@ -554,8 +578,12 @@ function StarView({
         if (!mounted) {
           return;
         }
-        setRankedImages(result.results.length > 0 ? result.results : images || []);
+        const hasResults = result.results.length > 0;
+        setRankedImages(hasResults ? result.results : images || []);
         setHasBuilt(true);
+        // An empty result set falls back to the unranked archive, which the
+        // lexical scorer then scores - not a CLIP ranking either way.
+        setClipRanked(result.clipUsed && hasResults);
         if (result.clipUsed) {
           setClipAvailable(true);
         }
@@ -564,6 +592,7 @@ function StarView({
           setRankedImages(images || []);
           setHasBuilt(true);
           setSearchError("Backend unavailable, showing local map view.");
+          setClipRanked(false);
           setClipAvailable(false);
         }
       } finally {
@@ -660,6 +689,12 @@ function StarView({
   }, [cinematicMode, openFullscreen, closeFullscreen]);
 
   const bestMatch = stars[0];
+  // Only meaningful once a CLIP-ranked sky is actually on screen.
+  const weakMatch =
+    clipRanked &&
+    !isSearching &&
+    stars.length > 0 &&
+    bestMatch.score < WEAK_MATCH_SCORE;
   const activeSelectedId =
     selectedStarId && stars.some((star) => star.id === selectedStarId)
       ? selectedStarId
@@ -846,6 +881,12 @@ function StarView({
 
         {searchError ? (
           <div className={styles.searchError}>{searchError}</div>
+        ) : null}
+
+        {weakMatch ? (
+          <div className={styles.searchNotice} role="status">
+            {WEAK_MATCH_NOTICE}
+          </div>
         ) : null}
       </div>
 

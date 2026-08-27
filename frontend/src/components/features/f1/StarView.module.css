@@ -492,6 +492,30 @@
   letter-spacing: 0.06em;
 }
 
+/* A weak-match hint, not a failure: same slot as .searchError, but reads as a
+   quiet aside from the atlas rather than a broken backend. */
+.searchNotice {
+  max-width: 62ch;
+  color: rgba(201, 225, 255, 0.7);
+  font-family: "IM Fell English", serif;
+  font-size: 0.76rem;
+  font-style: italic;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  animation: noticeFade 320ms ease both;
+}
+
+@keyframes noticeFade {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .metaRow {
   position: absolute;
   left: 16px;
