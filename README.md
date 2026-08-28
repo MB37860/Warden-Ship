@@ -269,6 +269,14 @@ CI builds both platforms on every version tag — see
 [`.github/workflows/build-desktop.yml`](.github/workflows/build-desktop.yml).
 Native ML wheels can't be cross-compiled, so each OS builds on its own runner.
 
+**What the installers contain.** The build stages every trained artifact it can
+find under `data/` into the bundle. Only the year head (1.2 MB) is committed —
+the other three are 330 MB to 1.2 GB, past GitHub's 100 MB file limit — so the
+installers published from CI run base CLIP, visual descriptors and zero-shot F2.
+Build locally with `data/clip_art`, `data/f1_embed` and `data/f2_dataset_hires`
+in place and you get an installer running the full stack; `npm run build:runtime`
+prints exactly which artifacts it staged and which it could not find.
+
 ---
 
 <details>

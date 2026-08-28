@@ -143,9 +143,8 @@ function pythonExe() {
 
 const COPY_SKIP_DIRS = new Set(["__pycache__", "training", ".pytest_cache", "node_modules"]);
 const COPY_SKIP_EXT = new Set([".pyc", ".pt", ".pth", ".h5", ".onnx", ".tflite", ".bin", ".npy"]);
-// Weights the app cannot fetch at runtime: the year head is ours, there is
-// nothing to download it from.
-const COPY_KEEP_FILES = new Set(["f5_year_head.pt"]);
+
+// Source tree only. Model weights are staged separately by stageModelData().
 
 function copyTree(src, dest) {
   const stat = fs.statSync(src);
@@ -156,7 +155,7 @@ function copyTree(src, dest) {
       copyTree(path.join(src, entry), path.join(dest, entry));
     }
   } else {
-    if (COPY_SKIP_EXT.has(path.extname(src)) && !COPY_KEEP_FILES.has(path.basename(src))) return;
+    if (COPY_SKIP_EXT.has(path.extname(src))) return;
     fs.copyFileSync(src, dest);
   }
 }
@@ -168,20 +167,73 @@ function stageBackend() {
   copyTree(path.join(repoRoot, "backend"), path.join(backendStageDir, "backend"));
 }
 
-// Trained artifacts that live under data/ and have no download URL. year_head.py
-// resolves its default path as parents[2]/data/..., which is exactly
-// runtime/backend/data/ once staged — so the packaged app finds the same file the
-// dev checkout does. Without this the F5 map cannot date an undated work at all.
-const STAGED_DATA_DIRS = ["f5_year_head"];
+// Trained artifacts that live under data/ and have no download URL — the app
+// cannot fetch any of these, they are ours. Each resolves its default path as
+// parents[2]/data/..., which is exactly runtime/backend/data/ once staged, so
+// the packaged app finds the same files the dev checkout does.
+//
+// `files` stages a directory file-by-file, for sources that also hold training
+// data: data/f2_dataset_hires is 20 GB of images and tars, of which the app
+// needs two files. Without `files` the whole directory is copied.
+//
+// Only the year head is `required`. The rest are far too large for git (GitHub
+// rejects any file over 100 MB), so a fresh clone or a CI runner will not have
+// them and must still be able to build — it just produces a weaker installer,
+// and says so. Train them with backend/training/*, or drop them into data/.
+const STAGED_DATA = [
+  // F5 year estimation (1.2 MB), small enough to commit.
+  { dir: "f5_year_head", required: true },
+  // Art fine-tuned CLIP (581 MB): F1 typed search and every stored embedding.
+  { dir: "clip_art", degrades: "F1 search falls back to base CLIP (style 0.55 -> 0.26)" },
+  // ArcFace metric embedding (330 MB): clustering and neighbours on the F5 map.
+  {
+    dir: "f1_embed",
+    files: ["f1_embed_model.pt", "f1_embed_labels.json"],
+    degrades: "the F5 map falls back to visual descriptors (p@1 0.61 -> 0.42)",
+  },
+  // F2 style/genre/artist classifier, ViT-L/336 (1.2 GB).
+  {
+    dir: "f2_dataset_hires",
+    files: ["f2_image_model.pt", "f2_labels.json"],
+    degrades: "F2 falls back to CLIP zero-shot",
+  },
+];
 
 function stageModelData() {
-  for (const name of STAGED_DATA_DIRS) {
-    const src = path.join(repoRoot, "data", name);
-    if (!fs.existsSync(src)) {
-      throw new Error(`Missing model artifact: ${src}`);
+  const missing = [];
+  for (const entry of STAGED_DATA) {
+    const src = path.join(repoRoot, "data", entry.dir);
+    const dest = path.join(backendStageDir, "data", entry.dir);
+    const present = entry.files
+      ? entry.files.every((name) => fs.existsSync(path.join(src, name)))
+      : fs.existsSync(src);
+
+    if (!present) {
+      if (entry.required) {
+        throw new Error(`Missing required model artifact: ${src}`);
+      }
+      missing.push(entry);
+      continue;
     }
-    console.log(`Staging data/${name} -> runtime/backend/data/${name}/`);
-    copyTree(src, path.join(backendStageDir, "data", name));
+
+    if (!entry.files) {
+      console.log(`Staging data/${entry.dir} -> runtime/backend/data/${entry.dir}/`);
+      fs.cpSync(src, dest, { recursive: true });
+      continue;
+    }
+    fs.mkdirSync(dest, { recursive: true });
+    for (const name of entry.files) {
+      console.log(`Staging data/${entry.dir}/${name}`);
+      fs.copyFileSync(path.join(src, name), path.join(dest, name));
+    }
+  }
+
+  if (missing.length) {
+    console.log("\nNOT staged - this installer will run degraded models:");
+    for (const entry of missing) {
+      console.log(`  data/${entry.dir} is absent -> ${entry.degrades}`);
+    }
+    console.log("");
   }
 }
 

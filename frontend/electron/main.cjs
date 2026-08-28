@@ -289,6 +289,19 @@ function spawnBackend() {
     delete env.PYTHONHOME;
     env.PYTHONPATH = cwd; // resolves `backend.electron_server`
     env.PYTHONNOUSERSITE = "1";
+
+    // The repo-root .env is not part of the bundle, and F2 is the one feature
+    // with no path auto-discovery — without these it silently falls back to
+    // CLIP zero-shot even when the weights are staged. CLIP and the F5 models
+    // find themselves relative to cwd and need nothing here. Values match
+    // data/f2_dataset_hires (ViT-L, 336px); the 0.49 unknown-artist threshold
+    // is already the classifier's default for this model. Harmless when the
+    // weights were not staged: the classifier checks the path exists.
+    const f2Dir = path.join(cwd, "data", "f2_dataset_hires");
+    env.F2_MODEL_KIND = env.F2_MODEL_KIND || "image";
+    env.F2_MODEL_PATH = env.F2_MODEL_PATH || path.join(f2Dir, "f2_image_model.pt");
+    env.F2_LABELS_PATH = env.F2_LABELS_PATH || path.join(f2Dir, "f2_labels.json");
+    env.F2_INPUT_SIZE = env.F2_INPUT_SIZE || "336";
   }
   if (effectiveMongoUri) {
     env.MONGO_URI = effectiveMongoUri; // point the backend at the bundled database
