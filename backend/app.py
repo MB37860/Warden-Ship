@@ -29,6 +29,7 @@ from backend.api.database_api import database_api_bp
 from backend.api.f2_api import f2_api_bp
 from backend.api.f6_api import f6_api_bp
 from backend.api.image_api import image_api_bp
+from backend.api.models_api import models_api_bp
 from backend.api.pipeline_api import pipeline_api_bp
 from backend.f5_history_map.f5_api import f5_api_bp
 
@@ -42,6 +43,7 @@ app.register_blueprint(f2_api_bp, url_prefix="/api/f2")
 app.register_blueprint(f5_api_bp, url_prefix="/api/f5")
 app.register_blueprint(f6_api_bp, url_prefix="/api/f6")
 app.register_blueprint(pipeline_api_bp, url_prefix="/api/pipeline")
+app.register_blueprint(models_api_bp, url_prefix="/api/models")
 
 @app.route("/")
 def index():

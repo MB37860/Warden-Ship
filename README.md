@@ -269,13 +269,25 @@ CI builds both platforms on every version tag — see
 [`.github/workflows/build-desktop.yml`](.github/workflows/build-desktop.yml).
 Native ML wheels can't be cross-compiled, so each OS builds on its own runner.
 
-**What the installers contain.** The build stages every trained artifact it can
-find under `data/` into the bundle. Only the year head (1.2 MB) is committed —
-the other three are 330 MB to 1.2 GB, past GitHub's 100 MB file limit — so the
-installers published from CI run base CLIP, visual descriptors and zero-shot F2.
-Build locally with `data/clip_art`, `data/f1_embed` and `data/f2_dataset_hires`
-in place and you get an installer running the full stack; `npm run build:runtime`
-prints exactly which artifacts it staged and which it could not find.
+**Where the models come from.** The year head (1.2 MB) is committed and ships
+inside the installer. The other three are 330 MB to 1.2 GB — past GitHub's
+100 MB file limit for git, and too big to bundle, since a release asset caps at
+2 GB and the installer is already 1.5 GB — so they live in public Hub repos and
+are downloaded on first use into `HF_HOME` (inside the app's data directory on a
+packaged build, so uninstalling removes them):
+
+| Model | Hub repo | Size |
+|---|---|---:|
+| Art-domain CLIP (F1 search, all embeddings) | [`breskvarmatej/warden-ship-clip-art`](https://huggingface.co/breskvarmatej/warden-ship-clip-art) | 581 MB |
+| ArcFace style embedding (F5 map) | [`breskvarmatej/warden-ship-f1-embed`](https://huggingface.co/breskvarmatej/warden-ship-f1-embed) | 330 MB |
+| Multi-task ViT-L/336 (F2) | [`breskvarmatej/warden-ship-f2-vitl336`](https://huggingface.co/breskvarmatej/warden-ship-f2-vitl336) | 1.2 GB |
+
+Every one of them falls back to something weaker rather than failing — base
+CLIP, visual descriptors, CLIP zero-shot — so the app is usable before the
+download and better after it. `GET /api/models` reports what is present and what
+each absence costs; the pipeline dialog offers the download. A checkout with the
+artifacts under `data/` uses those and never touches the network, and
+`npm run build:runtime` stages whatever it finds there into the installer.
 
 ---
 

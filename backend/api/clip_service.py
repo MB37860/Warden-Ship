@@ -10,6 +10,8 @@ from pathlib import Path
 
 import numpy as np
 
+from backend.api import model_assets
+
 torch = None
 Image = None
 CLIPModel = None
@@ -114,19 +116,18 @@ ART_CLIP_TAG = "clip-art-ft"
 
 
 def resolve_clip_model() -> str:
-    """Pick the CLIP weights: env override > local fine-tuned dir > base model.
+    """Pick the CLIP weights: env override > local dir > Hub > base model.
 
-    The art-fine-tuned CLIP (see backend/training/f1_clip_finetune) lives in
-    ``data/clip_art`` at the repo root and is preferred when present because it
-    is markedly better on art vocabulary (zero-shot style 0.55 vs 0.26).
+    The art-fine-tuned CLIP (see backend/training/f1_clip_finetune) is markedly
+    better on art vocabulary (zero-shot style 0.55 vs 0.26), so it is preferred
+    wherever it can be found: ``data/clip_art`` in a checkout, otherwise the
+    public Hub repo, which transformers downloads and caches on first use. If
+    that download cannot happen, ``_get_runtime`` falls back to base CLIP.
     """
     override = os.getenv("CLIP_MODEL_PATH", "").strip()
     if override:
         return override
-    fine_tuned = Path(__file__).resolve().parents[2] / "data" / "clip_art"
-    if (fine_tuned / "model.safetensors").exists():
-        return str(fine_tuned)
-    return _BASE_CLIP
+    return model_assets.resolve_model_dir("clip_art") or _BASE_CLIP
 
 
 def clip_model_tag() -> str:

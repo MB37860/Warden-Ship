@@ -165,6 +165,7 @@ class F2Runtime:
     last_error: str | None
     model_path: Path | None
     labels_path: Path | None
+    input_size: int = 224
 
 
 _RUNTIME: F2Runtime | None = None
@@ -191,11 +192,27 @@ def _load_labels_from_path(path: Path) -> dict[str, list[str]] | None:
 
 def _resolve_labels() -> tuple[dict[str, list[str]], Path | None]:
     labels_path = Path(os.getenv("F2_LABELS_PATH", "")).expanduser()
+    if not (labels_path and labels_path.exists()):
+        labels_path = _hub_file("f2_labels.json")
     if labels_path and labels_path.exists():
         labels = _load_labels_from_path(labels_path)
         if labels:
             return labels, labels_path
     return DEFAULT_LABELS, None
+
+
+def _hub_file(filename: str) -> Path | None:
+    """The classifier's weights from data/ or the public Hub repo.
+
+    F2 is the one feature with no path auto-discovery of its own - it has only
+    ever read F2_MODEL_PATH - so without this a packaged app that could not
+    bundle the 1.2 GB model silently served CLIP zero-shot instead.
+    """
+    try:
+        from backend.api import model_assets
+    except Exception:
+        return None
+    return model_assets.resolve_file("f2_vitl336", filename)
 
 
 def _resolve_device() -> str:
@@ -230,13 +247,15 @@ def _resolve_model_kind() -> str:
     return kind if kind in {"image", "clip-linear"} else "image"
 
 
-def _input_size() -> int:
+def _input_size(default: int = 224) -> int:
     # The exported image model is trained at a fixed resolution (224 for the
-    # baseline, 336 for the high-res ViT-L run). Match it via F2_INPUT_SIZE.
+    # baseline, 336 for the high-res ViT-L run). F2_INPUT_SIZE wins; otherwise
+    # the caller passes the resolution matching the weights it actually loaded,
+    # because preprocessing a 336 model at 224 quietly wrecks its accuracy.
     try:
-        return int(os.getenv("F2_INPUT_SIZE", "224"))
+        return int(os.getenv("F2_INPUT_SIZE", str(default)))
     except ValueError:
-        return 224
+        return default
 
 
 def get_runtime() -> F2Runtime:
@@ -247,6 +266,11 @@ def get_runtime() -> F2Runtime:
     labels, labels_path = _resolve_labels()
     model_path_value = os.getenv("F2_MODEL_PATH", "").strip()
     model_path = Path(model_path_value).expanduser() if model_path_value else None
+    # The Hub asset is specifically the ViT-L/336 run, so its resolution is
+    # known even when nothing set F2_INPUT_SIZE.
+    from_hub = model_path is None or not model_path.exists()
+    if from_hub:
+        model_path = _hub_file("f2_image_model.pt")
     device = _resolve_device()
     model_kind = _resolve_model_kind()
     model = None
@@ -260,13 +284,14 @@ def get_runtime() -> F2Runtime:
         else:
             available = True
     else:
-        last_error = "Model file not configured"
+        last_error = "Model file not available locally or from the Hub"
 
     _RUNTIME = F2Runtime(
         model=model,
         labels=labels,
         device=device,
         model_kind=model_kind,
+        input_size=_input_size(336 if from_hub else 224),
         available=available,
         last_error=last_error,
         model_path=model_path if model_path and model_path.exists() else None,
@@ -416,7 +441,7 @@ def _predict_with_model(image_bytes: bytes, top_k: int) -> dict:
             raise RuntimeError("CLIP runtime unavailable for F2 model")
         tensor = torch.from_numpy(embedding).to(runtime.device)
     else:
-        array = _preprocess_image(image_bytes, size=_input_size())
+        array = _preprocess_image(image_bytes, size=runtime.input_size)
         tensor = torch.from_numpy(array).unsqueeze(0).to(runtime.device)
 
     with torch.inference_mode():

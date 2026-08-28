@@ -297,6 +297,11 @@ function spawnBackend() {
     // data/f2_dataset_hires (ViT-L, 336px); the 0.49 unknown-artist threshold
     // is already the classifier's default for this model. Harmless when the
     // weights were not staged: the classifier checks the path exists.
+    // The three large models are downloaded from the Hub on first use. Keep
+    // that cache inside userData: the bundle is read-only, and a user who
+    // removes the app should not leave 2 GB behind in ~/.cache.
+    env.HF_HOME = env.HF_HOME || path.join(dataDir(), "model-cache");
+
     const f2Dir = path.join(cwd, "data", "f2_dataset_hires");
     env.F2_MODEL_KIND = env.F2_MODEL_KIND || "image";
     env.F2_MODEL_PATH = env.F2_MODEL_PATH || path.join(f2Dir, "f2_image_model.pt");

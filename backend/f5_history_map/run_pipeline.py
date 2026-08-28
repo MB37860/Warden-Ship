@@ -752,15 +752,19 @@ def _neighbor_payload(
 def _resolve_arcface_model() -> Path | None:
     """Locate the art-tuned ArcFace embedding (TorchScript, see f1_embedding).
 
-    Env override F5_EMBED_MODEL_PATH > auto-discovered data/f1_embed at the
-    repo root. Returns None when no usable model file is present.
+    Env override F5_EMBED_MODEL_PATH > data/f1_embed in a checkout > the public
+    Hub repo, downloaded and cached on first use. None when it cannot be found
+    at all, which drops the map back to visual descriptors.
     """
     override = os.getenv("F5_EMBED_MODEL_PATH", "").strip()
     if override:
         candidate = Path(override).expanduser()
         return candidate if candidate.exists() else None
-    candidate = Path(__file__).resolve().parents[2] / "data" / "f1_embed" / "f1_embed_model.pt"
-    return candidate if candidate.exists() else None
+    try:
+        from backend.api import model_assets
+    except Exception:
+        return None
+    return model_assets.resolve_file("f1_embed", "f1_embed_model.pt")
 
 
 def _try_arcface_embeddings(image_paths: list[Path]) -> np.ndarray | None:
