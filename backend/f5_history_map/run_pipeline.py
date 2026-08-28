@@ -821,19 +821,52 @@ def _try_arcface_embeddings(image_paths: list[Path]) -> np.ndarray | None:
 
 
 def _try_clip_embeddings(image_paths: list[Path]) -> np.ndarray | None:
+    """CLIP vectors for the map, using whichever weights the app is running."""
     if os.getenv("F5_RUNTIME_CLIP", "0") != "1":
         return None
     try:
         from backend.api.clip_service import embed_images
     except Exception:
         return None
+    return _embed_with(embed_images, image_paths)
 
+
+def _base_clip_tag() -> str | None:
+    """The ``embedding_model`` tag clip_service stamps on base-CLIP vectors.
+
+    None when clip_service cannot be imported (this module also runs standalone),
+    in which case a stored vector's provenance cannot be verified and it must not
+    reach the year head.
+    """
+    try:
+        from backend.api.clip_service import BASE_CLIP_TAG
+    except Exception:
+        return None
+    return BASE_CLIP_TAG
+
+
+def _base_clip_embeddings(image_paths: list[Path]) -> np.ndarray | None:
+    """CLIP vectors for the year head, pinned to the base weights.
+
+    Deliberately not behind ``F5_RUNTIME_CLIP``: that flag exists to keep the
+    map from recomputing CLIP it does not need, whereas the head has no other
+    source of the vectors it was trained on. If base CLIP cannot be loaded the
+    caller gets None and the works stay undated, which is the honest outcome.
+    """
+    try:
+        from backend.api.clip_service import embed_images_base
+    except Exception:
+        return None
+    return _embed_with(embed_images_base, image_paths)
+
+
+def _embed_with(embed_fn, image_paths: list[Path]) -> np.ndarray | None:
     embeddings: list[np.ndarray] = []
     batch_size = 16
     try:
         for start in range(0, len(image_paths), batch_size):
             raws = [path.read_bytes() for path in image_paths[start : start + batch_size]]
-            batch = embed_images(raws)
+            batch = embed_fn(raws)
             if batch is None:
                 return None
             embeddings.append(batch.astype(np.float32))
@@ -846,12 +879,24 @@ def _try_clip_embeddings(image_paths: list[Path]) -> np.ndarray | None:
     return np.vstack(embeddings).astype(np.float32)
 
 
-def _manifest_embeddings(records: list[dict[str, Any]]) -> np.ndarray | None:
+def _manifest_embeddings(
+    records: list[dict[str, Any]],
+    *,
+    require_model: str | None = None,
+) -> np.ndarray | None:
+    """Stored Mongo vectors, optionally restricted to one CLIP.
+
+    ``require_model`` rejects the whole batch unless every record was embedded
+    with those weights. An untagged record is rejected too: it predates the tag
+    and there is no way to prove which encoder produced it.
+    """
     vectors: list[list[float]] = []
     expected_len: int | None = None
     for record in records:
         embedding = record.get("embedding")
         if not isinstance(embedding, list) or not embedding:
+            return None
+        if require_model is not None and record.get("embedding_model") != require_model:
             return None
         if expected_len is None:
             expected_len = len(embedding)
@@ -1020,27 +1065,27 @@ def generate_history_index(
         pca_coords, explained = _pca(combined, dims=10)
         normalized_coords = _normalize_coords(pca_coords, dims=3)
 
-        # The trained year head consumes CLIP vectors specifically, so when the
-        # map was built from ArcFace/visual descriptors, fetch CLIP separately
-        # (stored Mongo vectors first, runtime CLIP second) — but only when
-        # there is actually a year to estimate.
+        # The trained year head consumes BASE CLIP vectors specifically - it was
+        # fitted on WikiArt's openai/clip-vit-base-patch32 embeddings. The app
+        # normally runs the art fine-tune, which keeps the same 512-d output, so
+        # a mismatch produces no error at all, just confident nonsense. Hence:
+        # never reuse the map's embedding_matrix here, take stored vectors only
+        # when they are tagged base, and otherwise recompute with base CLIP -
+        # and only when there is actually a year to estimate.
         clip_matrix = None
         if (
             year_head_available is not None
             and year_head_available()
             and any(year is None for year in known_years)
         ):
-            if embedding_source in {
-                "mongo_clip_plus_visual_descriptors",
-                "runtime_clip_plus_visual_descriptors",
-            }:
-                clip_matrix = embedding_matrix
-            else:
+            base_tag = _base_clip_tag()
+            if base_tag is not None:
                 clip_matrix = _manifest_embeddings(
-                    [_manifest_for(path, image_root, manifest) for path in used_image_files]
+                    [_manifest_for(path, image_root, manifest) for path in used_image_files],
+                    require_model=base_tag,
                 )
-                if clip_matrix is None:
-                    clip_matrix = _try_clip_embeddings(used_image_files)
+            if clip_matrix is None:
+                clip_matrix = _base_clip_embeddings(used_image_files)
 
         resolved_years, year_sources, year_confidences = _fill_years_with_model(
             known_years, year_sources, clip_matrix
@@ -1195,6 +1240,10 @@ def generate_history_index(
                 "estimated": int(estimated_count),
                 "undated": int(undated_count),
                 "year_head_available": bool(year_head_available is not None and year_head_available()),
+                # The head's own input, kept separate from embedding_source
+                # above: the map may run on the art fine-tune while the head
+                # must not. Null means it was never run this pass.
+                "year_head_input": "clip-base" if clip_matrix is not None else None,
                 "model": year_head_metrics() if year_head_metrics is not None else None,
             },
             "clusters": cluster_summaries,

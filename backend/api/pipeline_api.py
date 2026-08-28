@@ -356,6 +356,10 @@ def _extract_images_from_mongodb(
                         "tags": _json_safe(meta_doc.get("tags", [])),
                         "metadata": _json_safe(meta_doc.get("metadata", {})),
                         "embedding": _json_safe(meta_doc.get("embedding")),
+                        # Which CLIP produced that vector. F5's year head only
+                        # accepts base-CLIP vectors, and without this tag it
+                        # cannot tell them from the art fine-tune's.
+                        "embedding_model": _json_safe(meta_doc.get("embedding_model")),
                         "created_at": _json_safe(meta_doc.get("created_at")),
                         "image_url": image_url,
                     }

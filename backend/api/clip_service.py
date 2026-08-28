@@ -38,7 +38,10 @@ class _ClipRuntime:
     device: str
 
 
-_RUNTIME: _ClipRuntime | None = None
+# Keyed by resolved weights, because two different CLIPs can legitimately be
+# live at once: the art fine-tune for search, and base CLIP for the F5 year
+# head (which was trained on base vectors).
+_RUNTIMES: dict[str, _ClipRuntime] = {}
 
 
 def clip_available() -> bool:
@@ -106,6 +109,9 @@ def _ensure_clip_imports() -> bool:
 
 _BASE_CLIP = "openai/clip-vit-base-patch32"
 
+BASE_CLIP_TAG = "clip-base"
+ART_CLIP_TAG = "clip-art-ft"
+
 
 def resolve_clip_model() -> str:
     """Pick the CLIP weights: env override > local fine-tuned dir > base model.
@@ -126,25 +132,25 @@ def resolve_clip_model() -> str:
 def clip_model_tag() -> str:
     """Short identifier of the active CLIP weights (stored next to embeddings)."""
     resolved = resolve_clip_model()
-    return "clip-art-ft" if resolved != _BASE_CLIP else "clip-base"
+    return ART_CLIP_TAG if resolved != _BASE_CLIP else BASE_CLIP_TAG
 
 
 def _get_runtime(model_name: str | None = None) -> _ClipRuntime | None:
-    global _RUNTIME
-
     if not _ensure_clip_imports():
         return None
 
-    if _RUNTIME is not None:
-        return _RUNTIME
+    resolved = model_name or resolve_clip_model()
+    cached = _RUNTIMES.get(resolved)
+    if cached is not None:
+        return cached
 
     # One loader at a time: the weights are hundreds of MB, and two threads
     # loading them at once doubles the peak memory for no benefit.
     with _RUNTIME_LOCK:
-        if _RUNTIME is not None:
-            return _RUNTIME
+        cached = _RUNTIMES.get(resolved)
+        if cached is not None:
+            return cached
 
-        resolved = model_name or resolve_clip_model()
         device = "cuda" if torch.cuda.is_available() else "cpu"
         try:
             processor = CLIPProcessor.from_pretrained(resolved)
@@ -157,11 +163,17 @@ def _get_runtime(model_name: str | None = None) -> _ClipRuntime | None:
                 raise
             # Fine-tuned dir unusable (missing/corrupt) - fall back to base CLIP.
             print(f"[clip] {resolved} unusable ({error}); falling back to {_BASE_CLIP}", flush=True)
+            base = _RUNTIMES.get(_BASE_CLIP)
+            if base is not None:
+                _RUNTIMES[resolved] = base
+                return base
             processor = CLIPProcessor.from_pretrained(_BASE_CLIP)
             model = CLIPModel.from_pretrained(_BASE_CLIP).to(device)
+            resolved = _BASE_CLIP
         model.eval()
-        _RUNTIME = _ClipRuntime(processor=processor, model=model, device=device)
-        return _RUNTIME
+        runtime = _ClipRuntime(processor=processor, model=model, device=device)
+        _RUNTIMES[resolved] = runtime
+        return runtime
 
 
 def _feature_tensor(
@@ -182,8 +194,12 @@ def _feature_tensor(
     raise RuntimeError("CLIP returned an unsupported feature output")
 
 
-def embed_images(image_bytes_list: list[bytes]) -> np.ndarray | None:
-    runtime = _get_runtime()
+def embed_images(
+    image_bytes_list: list[bytes],
+    *,
+    model_name: str | None = None,
+) -> np.ndarray | None:
+    runtime = _get_runtime(model_name)
     if runtime is None or not image_bytes_list:
         return None
 
@@ -202,6 +218,18 @@ def embed_images(image_bytes_list: list[bytes]) -> np.ndarray | None:
         )
         vectors = features.detach().cpu().numpy().astype(np.float32)
     return _normalize(vectors).astype(np.float32)
+
+
+def embed_images_base(image_bytes_list: list[bytes]) -> np.ndarray | None:
+    """Embed with base CLIP, whatever weights the rest of the app is using.
+
+    The F5 year head was trained on base ``openai/clip-vit-base-patch32``
+    vectors. The art fine-tune retrains both encoders but keeps the same 512-d
+    projection, so handing the head fine-tuned vectors raises no error at all -
+    it just returns confidently wrong years. This is the one caller that needs
+    the base weights by name rather than whatever ``resolve_clip_model`` picks.
+    """
+    return embed_images(image_bytes_list, model_name=_BASE_CLIP)
 
 
 def embed_text(text: str) -> np.ndarray | None:

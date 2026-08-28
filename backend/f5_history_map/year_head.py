@@ -5,6 +5,12 @@ The head is a small TorchScript MLP trained on WikiArt CLIP embeddings
 -> (predicted years, confidence in [0, 1]). Loading is lazy and every failure
 degrades to None, in which case the work stays undated - the pipeline never
 invents a year.
+
+The input must come from BASE ``openai/clip-vit-base-patch32``. The app's art
+fine-tune (data/clip_art) retrains both encoders but keeps the same 512-d
+projection, so its vectors are accepted here without any error and simply
+produce wrong years. Callers go through clip_service.embed_images_base, or
+through stored vectors tagged ``embedding_model == "clip-base"``.
 """
 
 from __future__ import annotations
