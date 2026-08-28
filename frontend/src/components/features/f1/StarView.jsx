@@ -487,6 +487,7 @@ function StarView({
   const [rankedImages, setRankedImages] = useState(images || []);
   const [isSearching, setIsSearching] = useState(false);
   const [searchError, setSearchError] = useState("");
+  const [weakNoticeDismissed, setWeakNoticeDismissed] = useState(false);
   // null = still probing, true/false = CLIP backend availability. The atlas is
   // only usable when CLIP is available, so this gates the whole scene.
   const [clipAvailable, setClipAvailable] = useState(null);
@@ -570,6 +571,7 @@ function StarView({
 
       setIsSearching(true);
       setSearchError("");
+      setWeakNoticeDismissed(false);
       try {
         const result = await semanticSearch(
           activeQuery,
@@ -883,12 +885,29 @@ function StarView({
           <div className={styles.searchError}>{searchError}</div>
         ) : null}
 
-        {weakMatch ? (
-          <div className={styles.searchNotice} role="status">
-            {WEAK_MATCH_NOTICE}
-          </div>
-        ) : null}
       </div>
+
+      {weakMatch && !weakNoticeDismissed ? (
+        <div className={styles.noticeLayer}>
+          <div className={styles.searchNotice} role="status">
+            <span className={styles.noticeIcon} aria-hidden="true">
+              ✦
+            </span>
+            <div>
+              <p className={styles.noticeTitle}>The sky came back flat</p>
+              <p className={styles.noticeText}>{WEAK_MATCH_NOTICE}</p>
+            </div>
+            <button
+              type="button"
+              className={styles.noticeDismiss}
+              onClick={() => setWeakNoticeDismissed(true)}
+              aria-label="Dismiss this notice"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className={styles.metaRow}>
         <div className={styles.metaItem}>
