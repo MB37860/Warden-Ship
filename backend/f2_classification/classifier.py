@@ -202,17 +202,23 @@ def _resolve_labels() -> tuple[dict[str, list[str]], Path | None]:
 
 
 def _hub_file(filename: str) -> Path | None:
-    """The classifier's weights from data/ or the public Hub repo.
+    """The classifier's weights from data/ or the Hub cache, never over the wire.
 
     F2 is the one feature with no path auto-discovery of its own - it has only
     ever read F2_MODEL_PATH - so without this a packaged app that could not
     bundle the 1.2 GB model silently served CLIP zero-shot instead.
+
+    The download is started in the background rather than awaited: this runs
+    inside an HTTP request for a single classification, and blocking it on
+    1.2 GB is a timeout, not a download. Zero-shot answers in the meantime and
+    the next request picks the model up.
     """
     try:
         from backend.api import model_assets
     except Exception:
         return None
-    return model_assets.resolve_file("f2_vitl336", filename)
+    model_assets.fetch_in_background("f2_vitl336")
+    return model_assets.resolve_file("f2_vitl336", filename, download=False)
 
 
 def _resolve_device() -> str:
@@ -242,6 +248,14 @@ def _load_model(model_path: Path, device: str) -> Any | None:
     return None
 
 
+def _downloading(key: str) -> bool:
+    try:
+        from backend.api import model_assets
+    except Exception:
+        return False
+    return model_assets.is_downloading(key)
+
+
 def _resolve_model_kind() -> str:
     kind = os.getenv("F2_MODEL_KIND", "image").strip().lower()
     return kind if kind in {"image", "clip-linear"} else "image"
@@ -260,7 +274,11 @@ def _input_size(default: int = 224) -> int:
 
 def get_runtime() -> F2Runtime:
     global _RUNTIME
-    if _RUNTIME is not None:
+    # A runtime that never found its weights must not be cached: the background
+    # download can land at any moment, and the next call should pick it up.
+    # A runtime whose weights exist but would not load is cached, so a broken
+    # 1.2 GB file is not re-read on every request.
+    if _RUNTIME is not None and (_RUNTIME.available or _RUNTIME.model_path is not None):
         return _RUNTIME
 
     labels, labels_path = _resolve_labels()
@@ -283,6 +301,8 @@ def get_runtime() -> F2Runtime:
             last_error = "Model file found but could not be loaded"
         else:
             available = True
+    elif _downloading("f2_vitl336"):
+        last_error = "The classifier is still downloading; using CLIP zero-shot"
     else:
         last_error = "Model file not available locally or from the Hub"
 

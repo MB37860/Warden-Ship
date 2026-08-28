@@ -749,6 +749,29 @@ def _neighbor_payload(
     return neighbors, float(diversity)
 
 
+def _prefetch_asset(key: str, state_file: Path | None, pipeline_name: str, *, progress: int) -> None:
+    """Download a model before the step that needs it, with the wait explained.
+
+    Left to itself the fetch happens inside the first call that needs the
+    weights, so the progress bar sits still for however long the download takes
+    and looks hung.
+    """
+    try:
+        from backend.api import model_assets
+    except Exception:
+        return
+    if model_assets.is_available(key):
+        return
+    _write_state(
+        state_file,
+        pipeline_name,
+        progress=progress,
+        stage="model",
+        message=model_assets.describe(key),
+    )
+    model_assets.fetch(key)
+
+
 def _resolve_arcface_model() -> Path | None:
     """Locate the art-tuned ArcFace embedding (TorchScript, see f1_embedding).
 
@@ -1039,6 +1062,7 @@ def generate_history_index(
             stage="embedding",
             message="Checking for neural image embeddings",
         )
+        _prefetch_asset("f1_embed", state_file, pipeline_name, progress=44)
         embedding_matrix = _try_arcface_embeddings(used_image_files)
         if embedding_matrix is not None:
             embedding_source = "arcface_plus_visual_descriptors"

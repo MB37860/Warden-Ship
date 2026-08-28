@@ -14,6 +14,7 @@ caller already implements, not a broken app.
 
 from __future__ import annotations
 
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -167,6 +168,56 @@ def fetch(key: str) -> bool:
         return False
 
 
+# Assets currently being pulled by a background thread, so a request that
+# arrives while one is in flight starts nothing new.
+_BACKGROUND: set[str] = set()
+_BACKGROUND_LOCK = threading.Lock()
+
+
+def is_available(key: str) -> bool:
+    """Whether the asset can be loaded right now, without any network call."""
+    asset = ASSETS.get(key)
+    if asset is None:
+        return False
+    return _bundled_dir(asset) is not None or is_cached(asset)
+
+
+def is_downloading(key: str) -> bool:
+    with _BACKGROUND_LOCK:
+        return key in _BACKGROUND
+
+
+def fetch_in_background(key: str) -> None:
+    """Start pulling an asset without making the caller wait for it.
+
+    For request paths that must answer now and have a fallback to answer with:
+    blocking an HTTP request on 1.2 GB is a timeout, not a download.
+    """
+    if key not in ASSETS or is_available(key):
+        return
+    with _BACKGROUND_LOCK:
+        if key in _BACKGROUND:
+            return
+        _BACKGROUND.add(key)
+
+    def run() -> None:
+        try:
+            fetch(key)
+        finally:
+            with _BACKGROUND_LOCK:
+                _BACKGROUND.discard(key)
+
+    threading.Thread(target=run, name=f"fetch-{key}", daemon=True).start()
+
+
+def describe(key: str) -> str:
+    """One line for a progress bar: what is downloading and how big it is."""
+    asset = ASSETS.get(key)
+    if asset is None:
+        return "Downloading a model"
+    return f"Downloading {asset.repo_id.split('/')[-1]} ({asset.megabytes} MB) - first run only"
+
+
 def status() -> list[dict]:
     """Per-asset availability, for the interface and the health endpoint."""
     report = []
@@ -176,6 +227,8 @@ def status() -> list[dict]:
             source = "bundled"
         elif is_cached(asset):
             source = "downloaded"
+        elif is_downloading(asset.key):
+            source = "downloading"
         else:
             source = "absent"
         report.append(
@@ -183,7 +236,7 @@ def status() -> list[dict]:
                 "key": asset.key,
                 "repo_id": asset.repo_id,
                 "source": source,
-                "ready": source != "absent",
+                "ready": source in {"bundled", "downloaded"},
                 "megabytes": asset.megabytes,
                 "feature": asset.feature,
                 "degraded": asset.degraded,

@@ -18,6 +18,7 @@ from pathlib import Path
 
 from bson import ObjectId
 from flask import Blueprint, jsonify, request
+from backend.api import model_assets
 from backend.api.clip_service import clip_model_tag, embed_images
 from backend.f2_classification import classify_image
 from backend import paths
@@ -444,6 +445,18 @@ def _run_pipeline_worker(pipeline_name: str, use_mongodb: bool = True, db_name: 
                 docs_cursor = meta.find({})
                 docs_list = list(docs_cursor)
                 total = len(docs_list)
+
+                # Pull the art CLIP before the loop rather than inside the
+                # first embed_images() call, so the bar explains the wait
+                # instead of sitting at 0% while 581 MB arrives.
+                if not model_assets.is_available("clip_art"):
+                    _write_pipeline_state(
+                        pipeline_name,
+                        progress=0,
+                        stage="model",
+                        message=model_assets.describe("clip_art"),
+                    )
+                    model_assets.fetch("clip_art")
                 for i in range(0, total, batch_size):
                     batch = docs_list[i : i + batch_size]
                     images_bytes = []
