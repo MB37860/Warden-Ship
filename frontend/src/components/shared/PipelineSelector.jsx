@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import styles from "./PipelineSelector.module.css";
 import { runPipelines } from "../../api/pipelineApi";
+import { downloadModels, getModelStatus } from "../../api/modelsApi";
 
 const MotionDiv = motion.div;
+
+// How often to re-read model status while a download is running. The Hub gives
+// no progress callback across the HTTP boundary, so this is a liveness poll,
+// not a progress bar.
+const MODEL_POLL_MS = 4000;
 
 export default function PipelineSelector({
   onClose,
@@ -19,6 +25,56 @@ export default function PipelineSelector({
   });
   const [isRunning, setIsRunning] = useState(false);
   const [error, setError] = useState("");
+  const [models, setModels] = useState(null);
+  const [modelError, setModelError] = useState("");
+  const [modelPoll, setModelPoll] = useState(0);
+
+  // Reads once, then keeps reading only while something is downloading, so the
+  // loop ends by itself. Bumping modelPoll restarts it after a download starts.
+  useEffect(() => {
+    let mounted = true;
+    let timer = null;
+
+    const read = async () => {
+      try {
+        const status = await getModelStatus();
+        if (!mounted) {
+          return;
+        }
+        setModels(status);
+        if ((status.models || []).some((model) => model.downloading)) {
+          timer = window.setTimeout(read, MODEL_POLL_MS);
+        }
+      } catch {
+        // An older backend has no /api/models. Say nothing rather than accuse
+        // it of a problem it does not have.
+        if (mounted) {
+          setModels(null);
+        }
+      }
+    };
+
+    read();
+    return () => {
+      mounted = false;
+      if (timer) {
+        window.clearTimeout(timer);
+      }
+    };
+  }, [modelPoll]);
+
+  const missing = (models?.models || []).filter((model) => !model.ready);
+  const downloading = missing.some((model) => model.downloading);
+
+  const handleDownloadModels = async () => {
+    try {
+      setModelError("");
+      await downloadModels(missing.map((model) => model.key));
+      setModelPoll((count) => count + 1);
+    } catch (e) {
+      setModelError(e.message || "Could not start the download");
+    }
+  };
 
   const togglePipeline = (name) => {
     setSelectedPipelines((prev) => ({
@@ -154,6 +210,44 @@ export default function PipelineSelector({
               </div>
             </label>
           </div>
+
+          {missing.length > 0 && (
+            <div className={styles.modelNotice}>
+              <p className={styles.modelNoticeTitle}>
+                {downloading
+                  ? "Fetching the full models..."
+                  : `Running on fallback models (${models.pending_megabytes} MB not downloaded)`}
+              </p>
+              <ul className={styles.modelList}>
+                {missing.map((model) => (
+                  <li key={model.key}>
+                    <span>{model.feature}</span>
+                    <span className={styles.modelFallback}>
+                      {model.downloading
+                        ? `downloading ${model.megabytes} MB...`
+                        : `now: ${model.degraded}`}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                type="button"
+                className={styles.modelBtn}
+                onClick={handleDownloadModels}
+                disabled={downloading}
+              >
+                {downloading
+                  ? "Downloading in the background"
+                  : `Download the full models (${models.pending_megabytes} MB)`}
+              </button>
+              <p className={styles.modelHint}>
+                Analysis works either way - the download only makes the readings
+                better, and it continues while you keep using the app.
+              </p>
+            </div>
+          )}
+
+          {modelError && <div className={styles.error}>{modelError}</div>}
 
           {error && <div className={styles.error}>{error}</div>}
 

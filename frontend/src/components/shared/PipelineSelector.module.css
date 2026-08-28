@@ -205,3 +205,72 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Fallback-models notice. Amber, not red: nothing is broken, the readings are
+   just weaker than they could be, and the download is optional. */
+.modelNotice {
+  padding: 14px;
+  margin-bottom: 16px;
+  background: rgba(255, 168, 92, 0.08);
+  border: 1px solid rgba(255, 168, 92, 0.32);
+  border-radius: 6px;
+}
+
+.modelNoticeTitle {
+  margin: 0 0 10px;
+  color: #ffbf78;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.modelList {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modelList li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: rgba(240, 232, 224, 0.82);
+}
+
+.modelFallback {
+  flex-shrink: 0;
+  color: rgba(255, 191, 120, 0.78);
+}
+
+.modelBtn {
+  width: 100%;
+  padding: 9px 14px;
+  border: 1px solid rgba(255, 168, 92, 0.5);
+  border-radius: 6px;
+  background: rgba(255, 168, 92, 0.14);
+  color: #ffd9b0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modelBtn:hover:not(:disabled) {
+  background: rgba(255, 168, 92, 0.24);
+  color: #fff2e4;
+}
+
+.modelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modelHint {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: rgba(240, 232, 224, 0.58);
+}
