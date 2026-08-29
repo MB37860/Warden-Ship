@@ -16,6 +16,8 @@ classify and connect paintings that already exist.
 [![Electron](https://img.shields.io/badge/Electron-desktop-47848F?logo=electron&logoColor=white)](https://www.electronjs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+### [**Visit the project site &rarr;**](https://mb37860.github.io/Warden-Ship/)
+
 <img src="docs/images/deck.jpg" alt="The deck of The Warden at night" width="100%">
 
 </div>

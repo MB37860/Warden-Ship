@@ -1,0 +1,917 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Warden Ship — an interactive 3D explorer for digitised art collections</title>
+<meta name="description" content="Six machine-learning instruments aboard a ship that keeps human-made art. Bachelor's thesis, University of Ljubljana, Faculty of Computer and Information Science.">
+
+<meta property="og:title" content="Warden Ship">
+<meta property="og:description" content="An interactive 3D explorer for digitised art collections. A keeper, not a generator.">
+<meta property="og:image" content="https://mb37860.github.io/Warden-Ship/images/star-atlas.jpg">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+/* ---------------------------------------------------------------------------
+   Warden Ship.
+
+   One visual world, deliberately: a night sea that the page descends through.
+   No light theme - the subject is a ship at night, and inverting it would be
+   a different product. Every colour is therefore painted explicitly.
+
+   Palette is the app's own (StarView's space tokens), so the site and the
+   thing it documents read as one object.
+--------------------------------------------------------------------------- */
+
+:root {
+  --night:      #030816;
+  --deep:       #01060f;
+  --panel:      rgba(7, 18, 38, 0.72);
+  --panel-edge: rgba(118, 207, 255, 0.14);
+  --ink:        #e9f2fc;
+  --muted:      #93aac6;
+  --faint:      #63799a;
+  --cyan:       #76cfff;
+  --blue:       #1b52d6;
+  --violet:     #c53eff;
+  --ember:      #ff9a4d;
+
+  --measure: 66ch;
+  --gutter: clamp(20px, 5vw, 64px);
+  --col: min(1120px, 100%);
+}
+
+* { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* The sea. Fixed behind everything, painted by canvas, never interactive. */
+#sea {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.page { position: relative; z-index: 1; }
+
+.shell {
+  width: var(--col);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* --- type ---------------------------------------------------------------- */
+
+h1, h2, h3 {
+  font-family: "IM Fell English", Georgia, serif;
+  font-weight: 400;
+  text-wrap: balance;
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(3.4rem, 13vw, 9rem);
+  line-height: 0.92;
+  letter-spacing: -0.015em;
+}
+h2 { font-size: clamp(2rem, 4.6vw, 3.1rem); line-height: 1.08; }
+h3 { font-size: clamp(1.35rem, 2.4vw, 1.7rem); line-height: 1.2; }
+
+p { margin: 0; }
+.measure { max-width: var(--measure); }
+
+.eyebrow {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin: 0;
+}
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+
+a { color: var(--cyan); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+a:hover { color: #b9e6ff; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 3px; }
+
+/* --- hero ---------------------------------------------------------------- */
+
+.hero {
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  gap: 26px;
+  padding-block: 12vh 18vh;
+}
+.hero .title-mark {
+  display: block;
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  color: var(--cyan);
+  line-height: 1;
+  margin-bottom: 0.15em;
+}
+.hero-lede {
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+  color: var(--muted);
+  max-width: 34ch;
+}
+.hero-thesis {
+  font-family: "IM Fell English", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.2rem, 2.3vw, 1.6rem);
+  color: var(--ink);
+  max-width: 30ch;
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 20px;
+  border-radius: 2px;
+  border: 1px solid var(--panel-edge);
+  background: var(--panel);
+  color: var(--ink);
+  font-size: 0.92rem;
+  font-weight: 500;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.btn:hover {
+  border-color: rgba(118, 207, 255, 0.55);
+  background: rgba(15, 38, 70, 0.8);
+  color: var(--ink);
+  transform: translateY(-1px);
+}
+.btn-primary {
+  border-color: rgba(118, 207, 255, 0.5);
+  background: rgba(118, 207, 255, 0.14);
+}
+
+.scroll-cue {
+  margin-top: 5vh;
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--faint);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.scroll-cue::after {
+  content: "";
+  width: 52px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--faint), transparent);
+}
+
+/* --- sections ------------------------------------------------------------ */
+
+section { padding-block: clamp(72px, 11vh, 132px); }
+.section-head { display: grid; gap: 14px; margin-bottom: 52px; }
+
+/* A scrim keeps body copy legible over moving water without boxing it in. */
+.scrim {
+  position: relative;
+}
+.scrim::before {
+  content: "";
+  position: absolute;
+  inset: -40px -8vw;
+  z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(2, 8, 20, 0.82) 0%, rgba(2, 8, 20, 0) 72%);
+  pointer-events: none;
+}
+
+/* --- instruments --------------------------------------------------------- */
+
+.instruments { display: grid; gap: clamp(56px, 9vh, 104px); }
+
+.instrument {
+  display: grid;
+  gap: 28px;
+  align-items: center;
+}
+@media (min-width: 880px) {
+  .instrument { grid-template-columns: 1fr 1.15fr; gap: 48px; }
+  .instrument:nth-child(even) .instrument-text { order: 2; }
+}
+
+.instrument-text { display: grid; gap: 12px; align-content: start; }
+.instrument-lead { font-weight: 600; color: var(--ink); }
+.instrument-body { color: var(--muted); }
+
+.instrument-meta {
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(118, 207, 255, 0.16);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.76rem;
+  color: var(--faint);
+  line-height: 1.7;
+}
+.instrument-meta b { color: var(--cyan); font-weight: 500; }
+
+.shot {
+  position: relative;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid rgba(118, 207, 255, 0.16);
+  box-shadow: 0 26px 70px rgba(0, 0, 0, 0.6);
+  background: var(--deep);
+}
+.shot img { display: block; width: 100%; height: auto; }
+
+/* --- data ---------------------------------------------------------------- */
+
+.slab {
+  border: 1px solid var(--panel-edge);
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border-radius: 3px;
+  padding: clamp(22px, 3vw, 34px);
+}
+.slab + .slab { margin-top: 20px; }
+.slab h3 { margin-bottom: 4px; }
+.slab-note { color: var(--faint); font-size: 0.88rem; margin-bottom: 20px; }
+
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+}
+th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid rgba(118, 207, 255, 0.12); }
+th {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  font-weight: 500;
+  white-space: nowrap;
+}
+td.num, th.num { text-align: right; }
+tr:last-child td { border-bottom: 0; }
+tr.best td { color: var(--ink); font-weight: 600; }
+tr.best td:first-child { color: var(--cyan); }
+tr.base td { color: var(--faint); }
+
+/* --- models -------------------------------------------------------------- */
+
+.models { display: grid; gap: 16px; }
+@media (min-width: 780px) { .models { grid-template-columns: repeat(3, 1fr); } }
+.model {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 22px;
+  border: 1px solid var(--panel-edge);
+  background: var(--panel);
+  backdrop-filter: blur(10px);
+  border-radius: 3px;
+}
+.model-size {
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-size: 0.72rem;
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+}
+.model h3 { font-size: 1.15rem; }
+.model p { font-size: 0.88rem; color: var(--muted); }
+.model a { font-size: 0.82rem; }
+
+/* --- stack --------------------------------------------------------------- */
+
+.diagram {
+  border: 1px solid var(--panel-edge);
+  background: rgba(4, 12, 26, 0.86);
+  border-radius: 3px;
+  padding: clamp(16px, 3vw, 30px);
+}
+.diagram img { display: block; width: 100%; height: auto; }
+figcaption { margin-top: 14px; font-size: 0.84rem; color: var(--faint); }
+
+/* --- gallery ------------------------------------------------------------- */
+
+.gallery { display: grid; gap: 16px; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 880px) { .gallery { grid-template-columns: repeat(4, 1fr); } }
+.gallery figure { margin: 0; display: grid; gap: 9px; }
+.gallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 3px;
+  border: 1px solid rgba(118, 207, 255, 0.14);
+}
+.gallery figcaption { margin: 0; font-size: 0.8rem; }
+.gallery b { color: var(--ink); font-weight: 500; }
+
+/* --- footer -------------------------------------------------------------- */
+
+footer {
+  padding-block: clamp(60px, 9vh, 110px) 70px;
+  border-top: 1px solid rgba(118, 207, 255, 0.12);
+}
+.footer-grid { display: grid; gap: 30px; }
+@media (min-width: 780px) { .footer-grid { grid-template-columns: 1.4fr 1fr 1fr; } }
+.footer-grid h3 { font-size: 1rem; margin-bottom: 10px; }
+.footer-links { display: grid; gap: 7px; font-size: 0.9rem; }
+.colophon {
+  margin-top: 46px;
+  padding-top: 22px;
+  border-top: 1px solid rgba(118, 207, 255, 0.1);
+  font-size: 0.83rem;
+  color: var(--faint);
+  max-width: var(--measure);
+}
+
+/* --- reveal -------------------------------------------------------------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.seen { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="sea" aria-hidden="true"></canvas>
+
+<div class="page">
+
+<header class="hero shell">
+  <p class="eyebrow">University of Ljubljana &middot; Faculty of Computer and Information Science</p>
+  <h1><span class="title-mark">&#9875;</span>Warden Ship</h1>
+  <p class="hero-lede">An interactive 3D explorer for digitised art collections.</p>
+  <p class="hero-thesis">A keeper, not a generator &mdash; every model on board points inward, at art that already exists.</p>
+  <div class="actions">
+    <a class="btn btn-primary" href="https://github.com/MB37860/Warden-Ship/releases/latest">Download the desktop app</a>
+    <a class="btn" href="https://github.com/MB37860/Warden-Ship">Source on GitHub</a>
+    <a class="btn" href="thesis.pdf">Thesis (SL, PDF)</a>
+  </div>
+  <p class="scroll-cue">Descend</p>
+</header>
+
+<section id="what" class="shell">
+  <div class="section-head scrim reveal">
+    <p class="eyebrow">What it is</p>
+    <h2>Six instruments, not six dashboards</h2>
+  </div>
+  <div class="measure reveal" style="display:grid; gap:18px">
+    <p>You drop a ZIP of paintings onto the deck of a ship called <b>The Warden</b>. The archive is
+    stored, embedded and analysed by six machine-learning and computer-vision pipelines &mdash; and
+    handed back as six <i>places you can walk into</i>.</p>
+    <p class="muted">Type <i>&ldquo;a stormy sea at night&rdquo;</i> and the collection re-forms as a constellation.
+    Open the logbook and an unnamed canvas gets a style, a genre and an artist. Spread the chart
+    table and five centuries of painting lay themselves out by visual kinship. Every result is
+    precomputed and local; the voyage never blocks while the pipelines run.</p>
+  </div>
+</section>
+
+<section id="instruments" class="shell">
+  <div class="section-head scrim reveal">
+    <p class="eyebrow">F1 &ndash; F6</p>
+    <h2>The six instruments</h2>
+    <p class="measure muted">Numbered the way the codebase numbers them: each is a pipeline, a
+    scene, and a model that had to earn its place.</p>
+  </div>
+
+  <div class="instruments">
+
+    <article class="instrument reveal">
+      <div class="instrument-text">
+        <p class="eyebrow">F1 &middot; Star Atlas</p>
+        <h3>Semantic search</h3>
+        <p class="instrument-lead">A phrase becomes a constellation.</p>
+        <p class="instrument-body">A natural-language query embeds through CLIP; the collection
+        re-forms as a sky where the most relevant works are brightest, largest and most central.
+        If the backend is down it falls back to local lexical ranking, so the scene never dies.</p>
+        <p class="instrument-meta">Model &middot; <b>art-domain CLIP</b>, contrastively fine-tuned on WikiArt captions<br>
+        Zero-shot style <b>25.8% &rarr; 55.3%</b></p>
+      </div>
+      <div class="shot"><img src="images/star-atlas.jpg" alt="The Star Atlas: search results laid out as a constellation of paintings" loading="lazy"></div>
+    </article>
+
+    <article class="instrument reveal">
+      <div class="instrument-text">
+        <p class="eyebrow">F2 &middot; Logbook</p>
+        <h3>Style, genre, artist</h3>
+        <p class="instrument-lead">Every unnamed canvas gets a page.</p>
+        <p class="instrument-body">27 styles, 10 genres and a top-25 artist head, each with a
+        confidence band and art-historical &ldquo;echoes&rdquo; of the near-miss classes &mdash; because a
+        confident wrong answer is worse than a hedged one.</p>
+        <p class="instrument-meta">Model &middot; <b>multi-task ViT-L/14 @ 336</b>, three heads, masked joint loss<br>
+        Style <b>77.0%</b> &middot; genre <b>86.3%</b> &middot; artist <b>97.3%</b></p>
+      </div>
+      <div class="shot"><img src="images/logbook.jpg" alt="The Logbook: a gallery of classified paintings with confidence bands" loading="lazy"></div>
+    </article>
+
+    <article class="instrument reveal">
+      <div class="instrument-text">
+        <p class="eyebrow">F3 &middot; Creativity Currents</p>
+        <h3>Originality over time</h3>
+        <p class="instrument-lead">How far a work sits from its moment.</p>
+        <p class="instrument-body">Each painting gets a creativity reading decomposed into colour,
+        composition and subject, plotted along the archive's own chronology &mdash; derived from the
+        F5 map rather than asserted.</p>
+        <p class="instrument-meta">Derived client-side from the history map</p>
+      </div>
+      <div class="shot"><img src="images/creativity.jpg" alt="Creativity currents plotted along the archive chronology" loading="lazy"></div>
+    </article>
+
+    <article class="instrument reveal">
+      <div class="instrument-text">
+        <p class="eyebrow">F4 &middot; Influence Routes</p>
+        <h3>Directed visual lineage</h3>
+        <p class="instrument-lead">Who could have seen whom.</p>
+        <p class="instrument-body">Time-directed links between visually similar works, older to
+        newer, with the supporting pair shown side by side so the claim can be checked by eye
+        instead of taken on faith.</p>
+        <p class="instrument-meta">Derived client-side from the history map</p>
+      </div>
+      <div class="shot"><img src="images/influence.jpg" alt="Influence routes: directed links between visually similar works" loading="lazy"></div>
+    </article>
+
+    <article class="instrument reveal">
+      <div class="instrument-text">
+        <p class="eyebrow">F5 &middot; Chart Table</p>
+        <h3>The map of art history</h3>
+        <p class="instrument-lead">Five centuries, laid out by visual kinship.</p>
+        <p class="instrument-body">Embeddings to PCA to clustering to nearest-neighbour linking.
+        Works with no date are dated by a trained year head before they take a place on the
+        timeline &mdash; and works it cannot date stay visibly undated rather than being guessed.</p>
+        <p class="instrument-meta">Model &middot; <b>ArcFace style embedding</b> + a year regressor over CLIP<br>
+        Style p@1 <b>0.416 &rarr; 0.610</b> &middot; dating MAE <b>31 years</b></p>
+      </div>
+      <div class="shot"><img src="images/chart-table.jpg" alt="The Chart Table: the art history map spread across the table" loading="lazy"></div>
+    </article>
+
+    <article class="instrument reveal">
+      <div class="instrument-text">
+        <p class="eyebrow">F6 &middot; Captain's Quarters</p>
+        <h3>Four classical-CV filters</h3>
+        <p class="instrument-lead">No neural network answers these.</p>
+        <p class="instrument-body">A lay figure for pose, a dye board for colour families, a line
+        board for edge direction and a carved head for facial landmarks. Filters compose, and
+        nothing infers at view time &mdash; every reading was computed once, in advance.</p>
+        <p class="instrument-meta">MediaPipe pose &middot; k-means HSL &middot; Canny + Hough &middot; RetinaFace</p>
+      </div>
+      <div class="shot"><img src="images/captains-quarters.jpg" alt="The Captain's Quarters: four visual attribute filters" loading="lazy"></div>
+    </article>
+
+  </div>
+</section>
+
+<section id="results" class="shell">
+  <div class="section-head scrim reveal">
+    <p class="eyebrow">Measured, not claimed</p>
+    <h2>What the models actually do</h2>
+    <p class="measure muted">Every figure below is from a held-out test set with artist-disjoint
+    splits, seed 42. The raw artifacts are committed in the repository so anyone can check them.</p>
+  </div>
+
+  <div class="reveal">
+    <div class="slab">
+      <h3>Style, genre and artist</h3>
+      <p class="slab-note">12,680 held-out paintings.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Model</th><th class="num">Style (27)</th><th class="num">Genre (10)</th><th class="num">Artist (top-25)</th></tr>
+          </thead>
+          <tbody>
+            <tr class="base"><td>CLIP ViT-B/32, zero-shot</td><td class="num">25.8%</td><td class="num">57.7%</td><td class="num">56.0%</td></tr>
+            <tr><td>Fine-tuned ViT-B/16 @ 224</td><td class="num">68.1%</td><td class="num">83.7%</td><td class="num">94.5%</td></tr>
+            <tr class="best"><td>Fine-tuned ViT-L/14 @ 336</td><td class="num">77.0%</td><td class="num">86.3%</td><td class="num">97.3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="slab">
+      <h3>Adapting retrieval to the art domain</h3>
+      <p class="slab-note">Two components retrained for paintings rather than photographs.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Task</th><th class="num">Before</th><th class="num">After</th><th>Method</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Zero-shot style</td><td class="num">25.8%</td><td class="num">55.3%</td><td>Contrastive CLIP fine-tune</td></tr>
+            <tr><td>Zero-shot genre</td><td class="num">57.7%</td><td class="num">79.8%</td><td>Contrastive CLIP fine-tune</td></tr>
+            <tr class="best"><td>Style retrieval p@1</td><td class="num">0.416</td><td class="num">0.610</td><td>ArcFace metric embedding</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="slab">
+      <h3>Dating an undated painting</h3>
+      <p class="slab-note">A regression head over CLIP embeddings, trained on WikiArt.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Estimator</th><th class="num">Mean absolute error</th></tr>
+          </thead>
+          <tbody>
+            <tr class="base"><td>Naive baseline (predict the median year)</td><td class="num">73 years</td></tr>
+            <tr class="best"><td>Trained year head</td><td class="num">31 years</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="slab-note" style="margin:18px 0 0">Most reliable in the data-rich 19th and 20th centuries; error grows
+      sharply on older work, so the interface marks every estimated year as uncertain.</p>
+    </div>
+  </div>
+</section>
+
+<section id="models" class="shell">
+  <div class="section-head scrim reveal">
+    <p class="eyebrow">Open weights</p>
+    <h2>The models are downloadable</h2>
+    <p class="measure muted">Three of the four are too large to ship inside the installer, so they
+    live on the Hugging Face Hub and the app fetches them on first use. Each falls back to
+    something weaker rather than failing, so the app works before the download and better after.</p>
+  </div>
+  <div class="models reveal">
+    <article class="model">
+      <p class="model-size">581 MB</p>
+      <h3>Art-domain CLIP</h3>
+      <p>Contrastive fine-tune on WikiArt captions. Drives F1 search and every embedding stored.</p>
+      <a href="https://huggingface.co/breskvarmatej/warden-ship-clip-art">warden-ship-clip-art &rarr;</a>
+    </article>
+    <article class="model">
+      <p class="model-size">330 MB</p>
+      <h3>ArcFace style embedding</h3>
+      <p>Metric embedding where works of one style cluster. Lays out and clusters the F5 map.</p>
+      <a href="https://huggingface.co/breskvarmatej/warden-ship-f1-embed">warden-ship-f1-embed &rarr;</a>
+    </article>
+    <article class="model">
+      <p class="model-size">1.2 GB</p>
+      <h3>Multi-task ViT-L/336</h3>
+      <p>Three heads over one vision tower, trained jointly with a masked loss. The headline model.</p>
+      <a href="https://huggingface.co/breskvarmatej/warden-ship-f2-vitl336">warden-ship-f2-vitl336 &rarr;</a>
+    </article>
+  </div>
+</section>
+
+<section id="stack" class="shell">
+  <div class="section-head scrim reveal">
+    <p class="eyebrow">How it fits together</p>
+    <h2>React Three Fiber over Flask over MongoDB</h2>
+    <p class="measure muted">The frontend is a set of 3D scenes; the backend is a Flask API with
+    six self-contained pipeline directories; everything heavy runs as a background job so the
+    voyage stays interactive while models work.</p>
+  </div>
+  <div class="reveal" style="display:grid; gap:20px">
+    <figure class="diagram" style="margin:0">
+      <img src="images/architecture-app.png" alt="Application architecture: React Three Fiber frontend, Flask API, MongoDB with GridFS" loading="lazy">
+      <figcaption>Application architecture &mdash; scenes, API surface, storage.</figcaption>
+    </figure>
+    <figure class="diagram" style="margin:0">
+      <img src="images/architecture-models.png" alt="Model architecture: CLIP, the multi-task ViT, the ArcFace embedding and the year head" loading="lazy">
+      <figcaption>Model architecture &mdash; what was adapted, what was trained from scratch.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="voyage" class="shell">
+  <div class="section-head scrim reveal">
+    <p class="eyebrow">The rest of the voyage</p>
+    <h2>Places between the instruments</h2>
+  </div>
+  <div class="gallery reveal">
+    <figure>
+      <img src="images/chest-room.jpg" alt="The chest room, where a ZIP archive is loaded" loading="lazy">
+      <figcaption class="faint"><b>Chest room</b> &mdash; drop an archive into the chest.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/hallway.jpg" alt="The hallway hub connecting the six instruments" loading="lazy">
+      <figcaption class="faint"><b>Hallway</b> &mdash; the hub the six hang off.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/island.jpg" alt="The island telescope that opens the Star Atlas" loading="lazy">
+      <figcaption class="faint"><b>Island</b> &mdash; the telescope to the atlas.</figcaption>
+    </figure>
+    <figure>
+      <img src="images/deck.jpg" alt="The deck at night, where the voyage starts" loading="lazy">
+      <figcaption class="faint"><b>Deck</b> &mdash; where the voyage starts.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<footer class="shell">
+  <div class="footer-grid reveal">
+    <div>
+      <h3>Warden Ship</h3>
+      <p class="faint" style="font-size:0.9rem; max-width:38ch">The software half of a bachelor's
+      thesis at the University of Ljubljana, Faculty of Computer and Information Science.</p>
+    </div>
+    <div>
+      <h3>Get it</h3>
+      <div class="footer-links">
+        <a href="https://github.com/MB37860/Warden-Ship/releases/latest">Windows &amp; Linux installers</a>
+        <a href="https://github.com/MB37860/Warden-Ship">Source code</a>
+        <a href="https://huggingface.co/breskvarmatej">Model weights</a>
+      </div>
+    </div>
+    <div>
+      <h3>Read</h3>
+      <div class="footer-links">
+        <a href="thesis.pdf">Thesis (Slovene)</a>
+        <a href="https://github.com/MB37860/Warden-Ship/blob/main/docs/model-evaluation.md">Model evaluation</a>
+        <a href="https://github.com/MB37860/Warden-Ship/blob/main/docs/backend-architecture.md">Backend architecture</a>
+        <a href="https://github.com/MB37860/Warden-Ship/blob/main/docs/training-runbook.md">Training runbook</a>
+      </div>
+    </div>
+  </div>
+  <p class="colophon">Paintings from WikiArt. The collection skews heavily toward European work of
+  the 19th and 20th centuries, and every accuracy figure on this page should be read with that in
+  mind. Built with React Three Fiber, Flask, MongoDB and PyTorch.</p>
+</footer>
+
+</div>
+
+<script>
+/* ---------------------------------------------------------------------------
+   The sea.
+
+   One fixed canvas behind the whole document. Scrolling sinks the viewer: the
+   waterline climbs past the top of the screen, the sky and its stars fade out,
+   and light shafts start coming down from a surface now overhead. The page is
+   a descent, which is the same thing the archive is.
+--------------------------------------------------------------------------- */
+(function () {
+  var canvas = document.getElementById("sea");
+  var ctx = canvas.getContext("2d");
+  var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  var W = 0, H = 0, dpr = 1;
+  var stars = [];
+  var motes = [];
+  var progress = 0;   // 0 at the top of the document, 1 at the bottom
+  var t = 0;
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seed();
+  }
+
+  function seed() {
+    stars = [];
+    var count = Math.round((W * H) / 9000);
+    for (var i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H * 0.86,
+        r: Math.random() * 1.3 + 0.3,
+        p: Math.random() * Math.PI * 2,
+        s: Math.random() * 0.9 + 0.25,
+        d: Math.random() * 0.6 + 0.2      // parallax depth
+      });
+    }
+    motes = [];
+    var m = Math.round((W * H) / 26000);
+    for (var j = 0; j < m; j++) {
+      motes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.6 + 0.4,
+        v: Math.random() * 0.22 + 0.05,
+        p: Math.random() * Math.PI * 2
+      });
+    }
+  }
+
+  function readScroll() {
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+  }
+
+  function mix(a, b, k) { return a + (b - a) * k; }
+
+  /* Waterline: sits low in the hero, then rises off the top of the screen.
+     Past that the viewer is under it. */
+  function surfaceY() {
+    var descent = Math.min(1, progress / 0.34);
+    return mix(H * 0.76, -H * 0.16, descent * descent * (3 - 2 * descent));
+  }
+
+  function drawSky(y) {
+    var fade = Math.max(0, Math.min(1, (y + H * 0.16) / (H * 0.6)));
+    if (fade <= 0) return;
+    var g = ctx.createLinearGradient(0, 0, 0, Math.max(y, 1));
+    g.addColorStop(0, "#030816");
+    g.addColorStop(0.55, "#061027");
+    g.addColorStop(1, "#0a1a38");
+    ctx.globalAlpha = fade;
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, Math.max(y, 0));
+
+    // Nebulae, the same three the app paints behind its star atlas.
+    var neb = [
+      [W * 0.26, H * 0.22, H * 0.42, "27,82,214", 0.30],
+      [W * 0.78, H * 0.16, H * 0.34, "197,62,255", 0.20],
+      [W * 0.55, H * 0.52, H * 0.5, "118,207,255", 0.13]
+    ];
+    for (var i = 0; i < neb.length; i++) {
+      var n = neb[i];
+      var rg = ctx.createRadialGradient(n[0], n[1], 0, n[0], n[1], n[2]);
+      rg.addColorStop(0, "rgba(" + n[3] + "," + n[4] + ")");
+      rg.addColorStop(1, "rgba(" + n[3] + ",0)");
+      ctx.fillStyle = rg;
+      ctx.fillRect(0, 0, W, Math.max(y, 0));
+    }
+
+    // Stars, drifting slightly against the scroll.
+    for (var s = 0; s < stars.length; s++) {
+      var st = stars[s];
+      var sy = st.y - progress * H * 0.5 * st.d;
+      if (sy < -4 || sy > y) continue;
+      var tw = reduced ? 0.75 : 0.55 + 0.45 * Math.sin(t * st.s + st.p);
+      ctx.globalAlpha = fade * tw;
+      ctx.fillStyle = "#dbeeff";
+      ctx.beginPath();
+      ctx.arc(st.x, sy, st.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawDeep(y) {
+    // Below the surface. Deepens and darkens the further down the page you are.
+    var g = ctx.createLinearGradient(0, Math.max(y, 0), 0, H);
+    var top = progress < 0.5 ? "#0d2c5c" : "#071c3c";
+    g.addColorStop(0, top);
+    g.addColorStop(0.5, "#04122a");
+    g.addColorStop(1, progress < 0.5 ? "#020a1c" : "#01060f");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, Math.max(y, 0) - 1, W, H - Math.max(y, 0) + 2);
+  }
+
+  function drawShafts(y) {
+    // Light coming down from the surface once it is overhead.
+    var k = Math.max(0, Math.min(1, (progress - 0.2) / 0.35));
+    if (k <= 0) return;
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    for (var i = 0; i < 5; i++) {
+      var x = W * (0.12 + i * 0.19) + Math.sin(t * 0.16 + i) * W * 0.03;
+      var w = W * 0.07;
+      var g = ctx.createLinearGradient(x, y, x - w * 0.6, H);
+      g.addColorStop(0, "rgba(118,207,255," + (0.11 * k) + ")");
+      g.addColorStop(1, "rgba(118,207,255,0)");
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.moveTo(x - w * 0.4, y);
+      ctx.lineTo(x + w * 0.4, y);
+      ctx.lineTo(x + w * 1.5, H);
+      ctx.lineTo(x - w * 1.9, H);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function drawMotes() {
+    var k = Math.max(0, Math.min(1, (progress - 0.25) / 0.3));
+    if (k <= 0) return;
+    for (var i = 0; i < motes.length; i++) {
+      var m = motes[i];
+      var my = m.y - (reduced ? 0 : (t * m.v * 12) % (H + 40));
+      if (my < -20) my += H + 40;
+      ctx.globalAlpha = k * (0.14 + 0.14 * Math.sin(t * 0.5 + m.p));
+      ctx.fillStyle = "#a8d8ff";
+      ctx.beginPath();
+      ctx.arc(m.x + Math.sin(t * 0.3 + m.p) * 7, my, m.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  /* Three wave layers at the surface, each its own speed, for parallax. */
+  function wave(y, amp, len, speed, phase, fill, alpha) {
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = fill;
+    ctx.beginPath();
+    ctx.moveTo(0, H);
+    ctx.lineTo(0, y);
+    for (var x = 0; x <= W; x += 8) {
+      var yy = y
+        + Math.sin(x / len + t * speed + phase) * amp
+        + Math.sin(x / (len * 0.45) + t * speed * 1.6 + phase) * amp * 0.35;
+      ctx.lineTo(x, yy);
+    }
+    ctx.lineTo(W, H);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  function frame() {
+    ctx.clearRect(0, 0, W, H);
+    var y = surfaceY();
+
+    drawSky(y);
+    drawDeep(y);
+    drawShafts(y);
+    drawMotes();
+
+    // Only worth drawing while the surface is anywhere near the viewport.
+    if (y > -H * 0.3 && y < H * 1.2) {
+      wave(y + 26, 13, 190, 0.30, 0.0, "#123a72", 0.5);
+      wave(y + 12, 17, 150, 0.44, 1.7, "#0d2c5c", 0.75);
+      wave(y,      22, 115, 0.62, 3.1, "#071a3a", 1);
+    }
+
+    if (!reduced) t += 0.016;
+  }
+
+  var ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { readScroll(); ticking = false; });
+  }
+
+  function loop() {
+    frame();
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener("resize", resize, { passive: true });
+  window.addEventListener("scroll", onScroll, { passive: true });
+
+  resize();
+  readScroll();
+
+  if (reduced) {
+    // A single composed still frame, not a broken one.
+    frame();
+  } else {
+    loop();
+  }
+
+  /* Section reveals. */
+  var items = document.querySelectorAll(".reveal");
+  if (!("IntersectionObserver" in window) || reduced) {
+    for (var i = 0; i < items.length; i++) items[i].classList.add("seen");
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add("seen");
+          io.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
+    for (var j = 0; j < items.length; j++) io.observe(items[j]);
+  }
+})();
+</script>
+
+</body>
+</html>
