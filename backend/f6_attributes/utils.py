@@ -36,6 +36,27 @@ def discover_images(root: str | Path, extensions=(".jpg", ".jpeg", ".png", ".web
 # Image metadata
 # ---------------------------------------------------------------------------
 
+# Backends that mean "nothing was actually measured here". A record carrying one
+# is a placeholder, not a result.
+FALLBACK_BACKENDS = {"unavailable", "template-fallback"}
+
+
+def resumable_records(records: list[dict]) -> dict[str, dict]:
+    """Previously computed results worth keeping, keyed by image id.
+
+    Resume exists to avoid re-running a detector over images it already did.
+    Placeholders written by a fallback are not results, and keeping them freezes
+    the channel forever: one failed run writes a placeholder for every painting,
+    every later run skips every id it finds, and the detector never gets another
+    attempt even once the underlying problem is fixed.
+    """
+    return {
+        record["id"]: record
+        for record in records
+        if record.get("backend") not in FALLBACK_BACKENDS
+    }
+
+
 def image_meta(path: Path, root: Path) -> dict:
     """Return lightweight metadata dict for a painting."""
     return {

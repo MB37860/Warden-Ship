@@ -35,7 +35,13 @@ import numpy as np
 from tqdm import tqdm
 
 from backend.f6_attributes.mediapipe_compat import import_mediapipe
-from backend.f6_attributes.utils import discover_images, image_meta, load_json, save_json
+from backend.f6_attributes.utils import (
+    discover_images,
+    image_meta,
+    load_json,
+    resumable_records,
+    save_json,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +198,7 @@ def run(image_root: str | Path, output_path: str | Path, resume: bool = True) ->
     existing: dict[str, dict] = {}
     if resume and output_path.exists():
         try:
-            existing = {r["id"]: r for r in load_json(output_path)}
+            existing = resumable_records(load_json(output_path))
             logger.info(f"Resuming: {len(existing)} already processed")
         except Exception:
             pass
