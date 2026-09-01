@@ -61,18 +61,40 @@ N_KEYPOINTS     = 33     # MediaPipe Pose
 # ---------------------------------------------------------------------------
 
 def _load_mediapipe():
+    """The pose model, at the best complexity this install can actually load.
+
+    model_complexity=2 wants pose_landmark_heavy.tflite, which MediaPipe does
+    not ship - it downloads it on first use *into its own site-packages
+    directory*. Inside a packaged desktop build that directory is a read-only
+    mount, so the download raises OSError, the whole channel fails, and every
+    painting comes back with no pose at all. Complexity 1 uses
+    pose_landmark_full.tflite, which is bundled, so it always works.
+
+    The build pre-downloads the heavy model (see build-python-runtime.mjs) and
+    this keeps using it wherever it is present; the fallback only exists so a
+    missing download costs accuracy rather than the entire feature.
+    """
     try:
         mp = import_mediapipe()
-        return mp.solutions.pose.Pose(
-            static_image_mode=True,
-            model_complexity=2,
-            min_detection_confidence=0.5,
-        )
     except ImportError:
         raise RuntimeError(
             "MediaPipe is required for pose analysis. "
             "Install it with:  pip install mediapipe"
         )
+
+    for complexity in (2, 1):
+        try:
+            return mp.solutions.pose.Pose(
+                static_image_mode=True,
+                model_complexity=complexity,
+                min_detection_confidence=0.5,
+            )
+        except Exception as error:
+            logger.warning(
+                "Pose model complexity %s unavailable (%s: %s)",
+                complexity, type(error).__name__, error,
+            )
+    raise RuntimeError("No MediaPipe pose model could be loaded")
 
 
 def _pose_bounding_box_ratio(keypoints: list, img_w: int, img_h: int) -> float:

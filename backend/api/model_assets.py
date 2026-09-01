@@ -57,6 +57,21 @@ ASSETS: dict[str, ModelAsset] = {
         feature="clustering and neighbours on the F5 history map",
         degraded="visual descriptors (style p@1 0.61 -> 0.42)",
     ),
+    # Not a model - the WikiArt catalogue. It is where artist, title, real year
+    # and origin nationality come from, so the F6 globe cannot filter without
+    # it and F5 has to estimate every date. Too big for git (37 MB > GitHub's
+    # limit is fine, but data/ is gitignored, so a CI-built installer never has
+    # it), which is exactly the situation the Hub solves for the weights.
+    "wikiart_meta": ModelAsset(
+        key="wikiart_meta",
+        repo_id="breskvarmatej/warden-ship-wikiart-meta",
+        local_dir="WikiArt_dataset",
+        files=("WikiArt.parquet",),
+        marker="WikiArt.parquet",
+        megabytes=37,
+        feature="artist, title, catalogue year and the F6 globe's origin filter",
+        degraded="no origins on the globe, and F5 estimates every year",
+    ),
     "f2_vitl336": ModelAsset(
         key="f2_vitl336",
         repo_id="breskvarmatej/warden-ship-f2-vitl336",

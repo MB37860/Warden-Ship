@@ -255,6 +255,25 @@ function installRequirements() {
   run(py, ["-s", "-m", "pip", "install", "-r", REQUIREMENTS], hermetic);
 }
 
+// MediaPipe does not ship pose_landmark_heavy.tflite (28 MB): it downloads it on
+// first use, INTO its own site-packages directory. In a packaged build that
+// directory is a read-only mount, so the download raises
+// "OSError: [Errno 30] Read-only file system", the whole pose channel fails and
+// every painting comes back with no body pose. Fetch it now, while the tree is
+// still writable, so it is inside the bundle.
+function warmMediapipeModels() {
+  console.log("Pre-downloading the MediaPipe heavy pose model...");
+  const res = spawnSync(
+    pythonExe(),
+    ["-s", "-c", "import mediapipe as mp; mp.solutions.pose.Pose(static_image_mode=True, model_complexity=2).close()"],
+    { stdio: "inherit", env: { ...process.env, PYTHONNOUSERSITE: "1" } },
+  );
+  if (res.status !== 0) {
+    // Not fatal: pose_clustering falls back to the bundled complexity-1 model.
+    console.warn("  could not pre-download it; the build will use the bundled model instead");
+  }
+}
+
 async function main() {
   console.log(`Building portable Python runtime in ${runtimeDir}`);
   console.log(`Requirements: ${REQUIREMENTS}`);
@@ -262,6 +281,7 @@ async function main() {
   stageBackend();
   stageModelData();
   installRequirements();
+  warmMediapipeModels();
   console.log("\nDone. Portable runtime ready:");
   console.log(`  interpreter: ${pythonExe()}`);
   console.log(`  backend:     ${backendStageDir}`);

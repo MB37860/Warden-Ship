@@ -245,10 +245,26 @@ def _first_metadata_value(metadata: dict[str, Any], keys: list[str]) -> Any:
     return None
 
 
+def _wikiart_parquet() -> Path | None:
+    """The catalogue file: data/ in a checkout, otherwise fetched from the Hub.
+
+    A CI-built installer never carries it - data/ is gitignored - so the app
+    gets it the same way it gets the model weights.
+    """
+    local = Path(__file__).resolve().parents[2] / "data" / "WikiArt_dataset" / "WikiArt.parquet"
+    if local.exists():
+        return local
+    try:
+        from backend.api import model_assets
+    except Exception:
+        return None
+    return model_assets.resolve_file("wikiart_meta", "WikiArt.parquet")
+
+
 @lru_cache(maxsize=1)
 def _wikiart_lookup() -> dict[str, dict[str, Any]]:
-    parquet_path = Path(__file__).resolve().parents[2] / "data" / "WikiArt_dataset" / "WikiArt.parquet"
-    if not parquet_path.exists():
+    parquet_path = _wikiart_parquet()
+    if parquet_path is None or not parquet_path.exists():
         logger.warning(
             "WikiArt metadata not found at %s - artworks without a date in their "
             "filename or metadata now depend entirely on the trained year head.",
