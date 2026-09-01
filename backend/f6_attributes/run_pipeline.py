@@ -22,8 +22,20 @@ from __future__ import annotations
 
 import argparse
 import logging
+import os
 import sys
 from pathlib import Path
+
+# retina-face 0.0.17 builds its detector with Keras 2 idioms. TensorFlow 2.16+
+# ships Keras 3 by default, which rejects them outright - "A KerasTensor cannot
+# be used as input to a TensorFlow function" - so every face detection raises
+# and the carved head ends up with no painting to turn to. Routing tf.keras back
+# to the installed tf-keras 2.16 fixes it.
+#
+# This has to happen before ANYTHING imports TensorFlow. MediaPipe does, and the
+# body-pose step runs before the portrait step, so setting it inside
+# portrait_pose.py would already be too late.
+os.environ.setdefault("TF_USE_LEGACY_KERAS", "1")
 
 try:
     from backend.pipeline_state_store import write_pipeline_state

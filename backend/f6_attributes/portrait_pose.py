@@ -38,6 +38,10 @@ import os
 import re
 from pathlib import Path
 
+# See the note in run_pipeline.py: Keras 3 breaks retina-face's graph
+# construction. Set here too, for direct/CLI use of this module.
+os.environ.setdefault("TF_USE_LEGACY_KERAS", "1")
+
 import cv2
 import numpy as np
 from tqdm import tqdm

@@ -22,6 +22,12 @@ numpy==1.26.4
 torch
 transformers
 
+# --- WikiArt catalogue metadata (F6 globe origins, F5 catalogue years) ---
+# Without a parquet engine the lookup raises ImportError, every painting loses
+# its artist/title/region, and the globe filter can never match anything.
+pandas
+pyarrow
+
 # --- F6 clustering ---
 opencv-python==4.11.0.86
 opencv-contrib-python==4.11.0.86

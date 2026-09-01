@@ -197,6 +197,14 @@ const STAGED_DATA = [
     files: ["f2_image_model.pt", "f2_labels.json"],
     degrades: "F2 falls back to CLIP zero-shot",
   },
+  // WikiArt catalogue metadata (37 MB out of a 105 GB source directory). Not a
+  // model - it is where artist, title, real year and origin nationality come
+  // from, so without it the F6 globe has nothing to filter by.
+  {
+    dir: "WikiArt_dataset",
+    files: ["WikiArt.parquet"],
+    degrades: "the F6 globe has no origin regions, and F5 must estimate every year",
+  },
 ];
 
 function stageModelData() {
