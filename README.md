@@ -27,15 +27,19 @@ classify and connect paintings that already exist.
 ## What this is
 
 You drop a ZIP of paintings onto the deck of a ship called **The Warden**. The
-archive is stored, embedded and analysed by six machine-learning and
-computer-vision pipelines — and then handed back to you as six *places you can
-walk into*, not six dashboards.
+archive is stored, embedded and analysed by four background pipelines — F1, F2,
+F5 and F6 — and handed back to you as six *places you can walk into*, not six
+dashboards. The other two instruments, the creativity currents and the influence
+routes, are read out of the F5 map in the browser rather than computed by a
+pipeline of their own.
 
 Type *"a stormy sea at night"* and the collection re-forms as a constellation.
 Open the logbook and an unnamed canvas gets a style, a genre and an artist.
 Spread the chart table and five centuries of painting lay themselves out by
-visual kinship. Every result is precomputed, local, and reachable from a
-cinematic voyage that never blocks while the pipelines run.
+visual kinship. Every result is precomputed and stored on your machine, and
+reachable from a cinematic voyage that never blocks while the pipelines run. The
+model weights are fetched once from the Hugging Face Hub; after that nothing
+leaves the machine.
 
 This is the software half of a bachelor's thesis at the University of Ljubljana,
 Faculty of Computer and Information Science. The full write-up (in Slovene) is
@@ -84,7 +88,8 @@ derived client-side from the F5 map.
 
 ### 🧭 F4 · Influence Routes
 **Directed visual lineage.** Time-directed links between visually similar works
-(older → newer), with the supporting artwork pairs shown side by side.
+(older → newer), with the supporting artwork pairs shown side by side — read out
+of the F5 map in the browser, like F3.
 
 <img src="docs/images/influence.jpg" alt="Influence routes chart" width="100%">
 
@@ -185,7 +190,9 @@ trained in. Both figures come from the thesis; their TikZ source is in
 
 ## Quick start
 
-**Prerequisites** — Python 3.10+, Node.js 18+, and a MongoDB you can reach.
+**Prerequisites** — Python 3.12, Node.js 20.19+ or 22.12+ (Vite 8's own floor),
+and a MongoDB you can reach. The desktop build and CI both use Python 3.12 and
+Node 22; that is the combination this is tested on.
 
 ```bash
 git clone https://github.com/MB37860/Warden-Ship.git
@@ -272,24 +279,25 @@ CI builds both platforms on every version tag — see
 Native ML wheels can't be cross-compiled, so each OS builds on its own runner.
 
 **Where the models come from.** The year head (1.2 MB) is committed and ships
-inside the installer. The other three are 330 MB to 1.2 GB — past GitHub's
-100 MB file limit for git, and too big to bundle, since a release asset caps at
-2 GB and the installer is already 1.5 GB — so they live in public Hub repos and
-are downloaded on first use into `HF_HOME` (inside the app's data directory on a
-packaged build, so uninstalling removes them):
+inside the installer. Everything else is too large to travel with it — past
+GitHub's 100 MB limit for git, and past the 2 GB cap on a release asset once
+added to a 1.6 GB installer — so it lives in public Hub repos and is fetched on
+first use into `HF_HOME`, which sits inside the app's data directory on a
+packaged build so uninstalling takes it along:
 
-| Model | Hub repo | Size |
+| Artifact | Hub repo | Size |
 |---|---|---:|
-| Art-domain CLIP (F1 search, all embeddings) | [`breskvarmatej/warden-ship-clip-art`](https://huggingface.co/breskvarmatej/warden-ship-clip-art) | 581 MB |
-| ArcFace style embedding (F5 map) | [`breskvarmatej/warden-ship-f1-embed`](https://huggingface.co/breskvarmatej/warden-ship-f1-embed) | 330 MB |
-| Multi-task ViT-L/336 (F2) | [`breskvarmatej/warden-ship-f2-vitl336`](https://huggingface.co/breskvarmatej/warden-ship-f2-vitl336) | 1.2 GB |
+| Art-domain CLIP (F1 search, all embeddings) | [`warden-ship-clip-art`](https://huggingface.co/breskvarmatej/warden-ship-clip-art) | 581 MB |
+| ArcFace style embedding (F5 map) | [`warden-ship-f1-embed`](https://huggingface.co/breskvarmatej/warden-ship-f1-embed) | 330 MB |
+| Multi-task ViT-L/336 (F2) | [`warden-ship-f2-vitl336`](https://huggingface.co/breskvarmatej/warden-ship-f2-vitl336) | 1.2 GB |
+| WikiArt catalogue — artist, title, year, nationality | [`warden-ship-wikiart-meta`](https://huggingface.co/breskvarmatej/warden-ship-wikiart-meta) | 37 MB |
 
-Every one of them falls back to something weaker rather than failing — base
-CLIP, visual descriptors, CLIP zero-shot — so the app is usable before the
-download and better after it. `GET /api/models` reports what is present and what
-each absence costs; the pipeline dialog offers the download. A checkout with the
-artifacts under `data/` uses those and never touches the network, and
-`npm run build:runtime` stages whatever it finds there into the installer.
+Every one falls back to something weaker rather than failing — base CLIP, visual
+descriptors, CLIP zero-shot, and estimated years with no origins on the globe —
+so the app is usable before the download and better after it. `GET /api/models`
+reports what is present and what each absence costs; the pipeline dialog offers
+the download. A checkout with these under `data/` uses those and never touches
+the network.
 
 ---
 
@@ -311,6 +319,8 @@ artifacts under `data/` uses those and never touches the network, and
 | `GET` | `/api/f5/index`, `/api/f5/summary` | the map's manifest and cluster summary |
 | `GET` | `/api/f6/index` | **F6** — merged attribute index (pose, colour, hough, portrait) |
 | `GET` | `/api/f6/coords`, `/api/f6/summary` | attribute coordinates and channel coverage |
+| `GET` | `/api/models/` | which trained artifacts are present, and what each absence costs |
+| `POST` | `/api/models/download` | fetch the missing ones from the Hub, in the background |
 | `POST` | `/api/pipeline/run` | start F1 / F2 / F5 / F6 in the background |
 | `GET` | `/api/pipeline/status` | poll pipeline progress |
 | `POST` | `/api/pipeline/cancel` | cancel a running pipeline |
@@ -330,7 +340,7 @@ collection on disk.
 Warden-Ship/
 ├── backend/                     Flask API + ML pipelines
 │   ├── app.py                   dev entry point  ·  electron_server.py for the desktop shell
-│   ├── api/                     blueprints: image, database, f2, f6, pipeline · clip_service
+│   ├── api/                     blueprints: image, database, f2, f6, pipeline, models · clip_service
 │   ├── f1_search/               CLIP index builders
 │   ├── f2_classification/       runtime classifier (TorchScript → CLIP zero-shot → fallback)
 │   ├── f5_history_map/          history-map pipeline, year head, /api/f5
@@ -342,7 +352,7 @@ Warden-Ship/
 │   ├── src/api/                 every HTTP call in the app
 │   └── electron/                desktop main + preload
 ├── data/f5_year_head/           the one committed model artifact (1.2 MB)
-└── docs/                        thesis PDF, architecture, features, evaluation
+└── docs/                        project site (index.html) · thesis PDF, architecture, evaluation
 ```
 
 </details>
